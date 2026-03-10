@@ -3,1014 +3,487 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prime Chain Faucet — Get Testnet Tokens</title>
-    <meta name="description" content="Claim free PRIM and mock ERC-20 tokens on Prime Chain Testnet (Chain ID 7919)">
-    <meta name="theme-color" content="#4901FF">
+    <title>Prime Chain Faucet</title>
+    <meta name="description" content="Get testnet PRIM and mock tokens for development on Prime Chain (Chain ID 7919)">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg%20viewBox='0%200%20125%2086'%20fill='none'%20xmlns='http%3A//www.w3.org/2000/svg'><path%20d='M0%200C4.65%204.23%205.79%209.68%207.09%2015.62%208.41%2021.18%2010.06%2025.1%2014.72%2028.56%2020.1%2031.38%2024.77%2032.16%2030.72%2030.56%2034.86%2028.52%2036.66%2026.54%2038.84%2022.5%2040.67%2019.13%2041.47%2017.73%2044.72%2015.56%2047.3%2020.77%2046.34%2024%2044.84%2029.43%2040.78%2040.81%2033.12%2049.57%2022.72%2055.56%2013.28%2059.91%203.47%2061.59-6.47%2057.94-20.15%2051.68-27.12%2043.07-32.59%2029.25-34.19%2020.71-34.33%2012.37-30.28%204.56-22.13-5.1-10.58-7.39%200%200Z'%20fill='%234901FF'%20transform='translate(33.28%2C24.44)'/><path%20d='M0%200C10.09%206.6%2017.64%2015.51%2020.59%2027.38%2021.87%2035.58%2021.85%2043.56%2018%2051%2014.35%2055.33%2010.62%2058.67%204.88%2059.4-3.03%2059.34-8.26%2058.88-14.12%2053.25-17.87%2048.7-18.8%2043.14-20.04%2037.52-21.41%2032.48-22.87%2029.81-27.12%2026.75-31.96%2024.27-36.79%2023.27-42.14%2024.49-47.72%2026.74-49.97%2030.54-52.68%2035.76-54%2038-54%2038-57%2040-58.58%2038.42-58.28%2036.88-58.38%2034.69-58.22%2023.85-52.44%2014.54-45%207-32.28-4.18-15.38-8.02%200%200Z'%20fill='%234901FF'%20transform='translate(104%2C6)'/></svg>">
-<style>
-/* ======== Reset & Base ======== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-body {
-    font-family: 'Sora', 'Helvetica Neue', Arial, sans-serif;
-    background: #f8f9fa;
-    color: #081d35;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-}
-a { color: #0784c3; text-decoration: none; }
-a:hover { color: #066a9c; }
-button, input { font-family: inherit; }
-::selection { background: rgba(73, 1, 255, 0.15); color: #081d35; }
-.mono { font-family: 'JetBrains Mono', SFMono-Regular, Menlo, monospace; }
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-/* ======== Navbar ======== */
-.navbar {
-    background: #fff;
-    border-bottom: 1px solid #e9ecef;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-.navbar-content {
-    max-width: 1100px;
-    margin: 0 auto;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    padding: 0 24px;
-}
-.navbar-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    color: #081d35;
-}
-.brand-name { font-weight: 700; font-size: 1.1rem; }
-.brand-sub { font-size: 0.7rem; color: #6c757d; }
-.navbar-links {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-size: 0.85rem;
-}
-.navbar-links a {
-    color: #6c757d;
-    padding: 6px 12px;
-    border-radius: 8px;
-    transition: all 0.15s;
-    font-weight: 500;
-}
-.navbar-links a:hover { color: #081d35; background: #f0f1f3; }
-.chain-badge {
-    font-size: 0.75rem;
-    padding: 4px 10px;
-    background: #f0f1f3;
-    border-radius: 6px;
-    color: #6c757d;
-    font-weight: 600;
-}
-.chain-badge strong { color: #081d35; }
+        :root{
+            --color-main:#9461FF;
+            --color-secondary:#6A2FFF;
+            --color-deep:#4901FF;
+            --color-accent:#00FFF9;
+            --gradient-primary:linear-gradient(90deg,#9461FF 35%,#6A2FFF 100%);
+            --gradient-linear:linear-gradient(90deg,#6A2FFF,#00FFF9);
 
-/* ======== Hero ======== */
-.hero {
-    background: linear-gradient(135deg, #4901FF 0%, #6d2fff 50%, #3d01d0 100%);
-    padding: 56px 24px 48px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-.hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 50%);
-    pointer-events: none;
-}
-.hero-inner { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; }
-.hero-icon {
-    width: 64px;
-    height: 64px;
-    background: rgba(255,255,255,0.12);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 2rem;
-    backdrop-filter: blur(8px);
-}
-.hero h1 { font-size: 1.75rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
-.hero p { font-size: 0.95rem; color: rgba(255,255,255,0.75); }
+            --text-primary:#3A334D;
+            --text-secondary:#99B2C6;
+            --text-white:#FFF;
+            --color-border:#F1F5F7;
 
-/* ======== Main layout ======== */
-.main-container {
-    max-width: 1100px;
-    margin: -32px auto 0;
-    padding: 0 24px 48px;
-    position: relative;
-    z-index: 2;
-}
+            --bg-100:#F8F9FE;
+            --bg-200:#F3EDFF;
+            --bg-300:#E8DCFF;
+            --bg-card:#FFFFFF;
 
-/* ======== Token Cards Grid ======== */
-.token-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 32px;
-}
-.token-card {
-    background: #fff;
-    border: 2px solid #e9ecef;
-    border-radius: 14px;
-    padding: 24px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-}
-.token-card:hover { border-color: #c4b5fd; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(73,1,255,0.08); }
-.token-card.selected { border-color: #4901FF; background: #faf5ff; box-shadow: 0 0 0 3px rgba(73,1,255,0.1), 0 8px 24px rgba(73,1,255,0.12); }
-.token-card.selected::after {
-    content: '\2713';
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    width: 22px;
-    height: 22px;
-    background: #4901FF;
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 700;
-}
-.token-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    margin: 0 auto 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 800;
-}
-.token-icon.prim { background: linear-gradient(135deg, #4901FF, #6d2fff); color: #fff; }
-.token-icon.usdc { background: linear-gradient(135deg, #2775ca, #3b8de0); color: #fff; }
-.token-icon.usdt { background: linear-gradient(135deg, #26a17b, #3cc29a); color: #fff; }
-.token-icon.dai  { background: linear-gradient(135deg, #f5ac37, #f9c23c); color: #fff; }
-.token-name { font-weight: 700; font-size: 1rem; margin-bottom: 2px; }
-.token-amount { font-size: 0.82rem; color: #6c757d; font-weight: 500; }
-.token-method {
-    display: inline-block;
-    margin-top: 8px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-.token-method.api { background: #dcf7e9; color: #00a186; }
-.token-method.wallet { background: #e8f0fe; color: #066a9c; }
+            --success:#1AB280;
+            --success-bg:#DFFBEE;
+            --danger:#B61616;
+            --danger-bg:#FDE4E9;
+            --warning:#C75E05;
 
-/* ======== Claim Card ======== */
-.claim-card {
-    background: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 14px;
-    box-shadow: 0 0.5rem 1.2rem rgba(189,197,209,0.2);
-    padding: 32px;
-    margin-bottom: 32px;
-}
-.claim-card h2 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.input-group {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-.input-group input {
-    flex: 1;
-    padding: 14px 18px;
-    border: 1.5px solid #e9ecef;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-family: 'JetBrains Mono', monospace;
-    transition: border-color 0.15s;
-    outline: none;
-    background: #f8f9fa;
-}
-.input-group input:focus { border-color: #4901FF; background: #fff; }
-.input-group input::placeholder { color: #adb5bd; font-family: 'Sora', sans-serif; }
-.claim-btn {
-    padding: 14px 32px;
-    background: #4901FF;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-    min-width: 160px;
-}
-.claim-btn:hover:not(:disabled) { background: #3d01d0; transform: translateY(-1px); }
-.claim-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-.claim-btn .spinner-sm {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    vertical-align: middle;
-    margin-right: 6px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+            --shadow-sm:0px 2px 4px 0px rgba(0,0,0,0.05);
+            --shadow-md:0px 4px 12px rgba(0,0,0,0.08);
+            --font:'Sora',sans-serif;
+            --mono:'JetBrains Mono','Fira Code',monospace;
+            --radius:12px;
+            --radius-sm:8px;
+            --transition:200ms ease;
+        }
 
-.status-msg {
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    margin-top: 16px;
-    display: none;
-    align-items: center;
-    gap: 8px;
-}
-.status-msg.show { display: flex; }
-.status-msg.success { background: #dcf7e9; color: #00734f; border: 1px solid #b8ecd4; }
-.status-msg.error { background: #fce8e8; color: #c53030; border: 1px solid #f5c6c6; }
-.status-msg.info { background: #e8f0fe; color: #066a9c; border: 1px solid #bbd4f0; }
-.status-msg a { color: inherit; text-decoration: underline; font-weight: 600; }
+        .dark-mode{
+            --color-main:#EFE8FF;
+            --color-secondary:#4901FF;
+            --text-primary:#FFFFFF;
+            --text-secondary:#B4B1F5;
+            --color-border:#472F83;
+            --bg-100:#0D002F;
+            --bg-200:#513197;
+            --bg-300:#9461FF;
+            --bg-card:#281459;
+            --success:#42E342;
+            --success-bg:#134213;
+            --danger:#FAB5B5;
+            --danger-bg:#721414;
+        }
 
-.cooldown-display {
-    display: none;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: #fdf0d5;
-    color: #7c5e00;
-    border: 1px solid #f5e1a4;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    margin-top: 12px;
-}
-.cooldown-display.show { display: flex; }
+        html{scroll-behavior:smooth;font-size:16px}
+        body{
+            font-family:var(--font);font-weight:300;background:var(--bg-100);
+            color:var(--text-primary);min-height:100vh;display:flex;flex-direction:column;
+            align-items:center;-webkit-font-smoothing:antialiased;
+            transition:background .3s,color .3s;
+        }
+        ::selection{background:var(--bg-200);color:var(--text-primary)}
+        a{color:var(--color-secondary);text-decoration:none;transition:opacity var(--transition)}
+        a:hover{opacity:.8}
+        .dark-mode a{color:var(--color-accent)}
 
-.metamask-hint {
-    display: none;
-    margin-top: 16px;
-    padding: 16px;
-    background: #faf5ff;
-    border: 1px solid #e9d5ff;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    color: #4c1d95;
-}
-.metamask-hint.show { display: block; }
-.metamask-hint p { margin-bottom: 8px; }
-.metamask-hint code {
-    background: rgba(73,1,255,0.08);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
-    word-break: break-all;
-}
+        /* Header */
+        .header{
+            width:100%;position:sticky;top:0;z-index:10;
+            background:var(--bg-card);box-shadow:var(--shadow-sm);
+            transition:background .3s;
+        }
+        .header-inner{
+            max-width:600px;margin:0 auto;padding:0 1.5rem;
+            height:64px;display:flex;align-items:center;justify-content:space-between;
+        }
+        .header-left{display:flex;align-items:center;gap:.75rem}
+        .header-left svg{width:32px;height:32px;flex-shrink:0}
+        .header-title{font-size:18px;font-weight:700;letter-spacing:-0.02em}
 
-/* ======== Two-column bottom ======== */
-.bottom-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-bottom: 32px;
-}
+        .header-actions{display:flex;align-items:center;gap:.5rem}
+        .theme-toggle{
+            width:36px;height:36px;border-radius:8px;border:1px solid var(--color-border);
+            background:transparent;cursor:pointer;display:flex;align-items:center;
+            justify-content:center;transition:all var(--transition);color:var(--text-secondary);
+        }
+        .theme-toggle:hover{border-color:var(--color-main);color:var(--color-main)}
+        .theme-toggle svg{width:18px;height:18px}
 
-/* ======== Recent Drips ======== */
-.recent-card, .network-card {
-    background: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 14px;
-    box-shadow: 0 0.5rem 1.2rem rgba(189,197,209,0.2);
-    overflow: hidden;
-}
-.card-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 20px;
-    border-bottom: 1px solid #e9ecef;
-    font-size: 0.875rem;
-    font-weight: 600;
-}
-.drip-list { list-style: none; }
-.drip-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 20px;
-    border-bottom: 1px solid #f0f1f3;
-    font-size: 0.82rem;
-}
-.drip-item:last-child { border-bottom: none; }
-.drip-token {
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    min-width: 48px;
-    text-align: center;
-}
-.drip-token.prim { background: #ede9fe; color: #4901FF; }
-.drip-token.usdc { background: #dbeafe; color: #2775ca; }
-.drip-token.usdt { background: #d1fae5; color: #26a17b; }
-.drip-token.dai  { background: #fef3c7; color: #b45309; }
-.drip-addr { font-family: 'JetBrains Mono', monospace; color: #0784c3; font-size: 0.78rem; }
-.drip-time { color: #8c98a4; font-size: 0.75rem; margin-left: auto; white-space: nowrap; }
-.drip-empty {
-    padding: 32px 20px;
-    text-align: center;
-    color: #8c98a4;
-    font-size: 0.85rem;
-}
+        .chain-pill{
+            display:inline-flex;align-items:center;gap:.4rem;
+            padding:.3rem .75rem;border-radius:100px;font-size:11px;font-weight:600;
+            font-family:var(--mono);background:var(--bg-200);color:var(--color-secondary);
+            border:1px solid var(--color-border);transition:all .3s;
+        }
+        .dark-mode .chain-pill{color:var(--color-accent)}
+        .chain-dot{width:6px;height:6px;border-radius:50%;background:var(--success);
+            box-shadow:0 0 6px var(--success);animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* ======== Network Info ======== */
-.net-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 20px;
-    border-bottom: 1px solid #f0f1f3;
-    font-size: 0.85rem;
-}
-.net-row:last-child { border-bottom: none; }
-.net-label { color: #6c757d; }
-.net-val { font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
-.net-val.copyable { cursor: pointer; color: #0784c3; }
-.net-val.copyable:hover { color: #4901FF; }
-.add-network-btn {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    background: #4901FF;
-    color: #fff;
-    border: none;
-    border-radius: 0 0 14px 14px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s;
-}
-.add-network-btn:hover { background: #3d01d0; }
+        /* Container */
+        .container{
+            width:100%;max-width:520px;padding:0 1.5rem;margin:0 auto;
+            display:flex;flex-direction:column;align-items:center;flex:1;
+        }
 
-/* ======== FAQ ======== */
-.faq-section {
-    margin-bottom: 32px;
-}
-.faq-section h2 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 16px;
-}
-.faq-item {
-    background: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 12px;
-    margin-bottom: 8px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(189,197,209,0.1);
-}
-.faq-q {
-    padding: 14px 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background 0.15s;
-    user-select: none;
-}
-.faq-q:hover { background: #f8f9fa; }
-.faq-q .arrow {
-    font-size: 0.75rem;
-    color: #8c98a4;
-    transition: transform 0.2s;
-    flex-shrink: 0;
-}
-.faq-item.open .faq-q .arrow { transform: rotate(180deg); }
-.faq-a {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-}
-.faq-item.open .faq-a { max-height: 500px; }
-.faq-a-inner {
-    padding: 0 20px 16px;
-    font-size: 0.85rem;
-    color: #495057;
-    line-height: 1.7;
-}
-.faq-a-inner code {
-    background: #f0f1f3;
-    padding: 1px 5px;
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
-}
+        /* Hero */
+        .hero{margin-top:2.5rem;text-align:center}
+        .hero h2{
+            font-size:24px;font-weight:700;margin-bottom:.5rem;
+        }
+        .hero .gradient-title{
+            background:linear-gradient(82.84deg,var(--text-primary) 51.47%,#9461FF 99.63%);
+            background-clip:text;-webkit-text-fill-color:transparent;
+        }
+        .dark-mode .hero .gradient-title{
+            background:linear-gradient(82.84deg,#fff 51.47%,#bfa0ff 99.63%);
+            background-clip:text;-webkit-text-fill-color:transparent;
+        }
+        .hero p{color:var(--text-secondary);font-size:14px;line-height:1.6;margin-top:.25rem}
 
-/* ======== Footer ======== */
-.footer {
-    background: #fff;
-    border-top: 1px solid #e9ecef;
-    padding: 24px;
-    text-align: center;
-    font-size: 0.82rem;
-    color: #8c98a4;
-}
-.footer a { color: #6c757d; margin: 0 8px; }
-.footer a:hover { color: #0784c3; }
+        /* Card */
+        .card{
+            margin-top:2rem;width:100%;padding:1.75rem;
+            background:var(--bg-card);border:1px solid var(--color-border);
+            border-radius:var(--radius);box-shadow:var(--shadow-sm);
+            transition:all .3s;
+        }
+        .card-title{font-size:16px;font-weight:600;margin-bottom:.2rem}
+        .card-desc{font-size:13px;color:var(--text-secondary);margin-bottom:1.25rem;line-height:1.6}
 
-/* ======== Toast ======== */
-.toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    padding: 10px 20px;
-    background: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 10px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-    font-size: 0.85rem;
-    color: #081d35;
-    opacity: 0;
-    transition: all 0.3s;
-    z-index: 300;
-    white-space: nowrap;
-}
-.toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+        /* Form */
+        label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:.4rem}
 
-/* ======== Responsive ======== */
-@media (max-width: 900px) {
-    .token-grid { grid-template-columns: repeat(2, 1fr); }
-    .bottom-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 600px) {
-    .token-grid { grid-template-columns: 1fr 1fr; }
-    .input-group { flex-direction: column; }
-    .claim-btn { width: 100%; }
-    .hero h1 { font-size: 1.35rem; }
-    .claim-card { padding: 20px; }
-    .navbar-links { display: none; }
-}
-</style>
+        .input-wrap{
+            display:flex;align-items:center;gap:.5rem;
+            background:var(--bg-100);border:1px solid var(--color-border);
+            border-radius:var(--radius-sm);padding:.15rem .15rem .15rem .75rem;
+            transition:border-color var(--transition);
+        }
+        .input-wrap:focus-within{border-color:var(--color-secondary)}
+        .input-wrap input{
+            flex:1;background:none;border:none;outline:none;color:var(--text-primary);
+            font-family:var(--mono);font-size:13px;padding:.6rem 0;
+        }
+        .input-wrap input::placeholder{color:var(--text-secondary);opacity:.6}
+
+        .wallet-btn{
+            flex-shrink:0;padding:.5rem .7rem;border-radius:var(--radius-sm);
+            background:var(--bg-card);border:1px solid var(--color-border);
+            color:var(--text-secondary);font-size:12px;font-weight:600;
+            cursor:pointer;transition:all var(--transition);font-family:var(--font);
+        }
+        .wallet-btn:hover{border-color:var(--color-main);color:var(--color-main)}
+
+        /* Primary button */
+        .submit-btn{
+            margin-top:1rem;width:100%;padding:.7rem;border:none;cursor:pointer;
+            border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;
+            font-weight:600;color:var(--text-white);position:relative;overflow:hidden;
+            background:var(--gradient-primary);transition:all var(--transition);
+        }
+        .submit-btn div{
+            background:#9461FF;border:solid 1px #9461FF;
+            padding:.65rem;border-radius:calc(var(--radius-sm) - 2px);
+            transition:all .3s;color:white;font-weight:600;font-size:14px;
+            font-family:var(--font);
+        }
+        .submit-btn:hover div{background:transparent}
+        .submit-btn:disabled{opacity:.4;cursor:wait}
+        .submit-btn:disabled div{background:#9461FF}
+
+        .spinner{display:none;width:14px;height:14px;border:2px solid transparent;
+            border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;
+            margin-right:.4rem;vertical-align:middle}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        /* Result */
+        .result{
+            margin-top:1rem;padding:.7rem 1rem;border-radius:var(--radius-sm);
+            font-family:var(--mono);font-size:12px;line-height:1.6;display:none;
+            word-break:break-all;
+        }
+        .result.show{display:block}
+        .result.success{background:var(--success-bg);color:var(--success);border:1px solid var(--success)}
+        .result.error{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger)}
+        .result a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+
+        /* Info grid */
+        .info-section{
+            margin-top:1.25rem;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:.6rem;
+        }
+        .info-card{
+            padding:.85rem 1rem;background:var(--bg-card);border:1px solid var(--color-border);
+            border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);transition:all .3s;
+        }
+        .info-label{font-size:11px;font-weight:600;color:var(--text-secondary);
+            text-transform:uppercase;letter-spacing:.04em;margin-bottom:.2rem}
+        .info-value{font-size:14px;font-weight:600;font-family:var(--mono)}
+        .info-value.accent{color:var(--color-secondary)}
+        .dark-mode .info-value.accent{color:var(--color-accent)}
+
+        /* Tokens */
+        .tokens-section{
+            margin-top:1.25rem;width:100%;padding:1.25rem;
+            background:var(--bg-card);border:1px solid var(--color-border);
+            border-radius:var(--radius);box-shadow:var(--shadow-sm);transition:all .3s;
+        }
+        .tokens-title{font-size:14px;font-weight:600;margin-bottom:.6rem}
+        .token-row{
+            display:flex;align-items:center;justify-content:space-between;
+            padding:.45rem 0;border-bottom:1px solid var(--color-border);
+        }
+        .token-row:last-child{border-bottom:none}
+        .token-name{font-weight:600;font-size:13px}
+        .token-hint{font-size:11px;color:var(--text-secondary);font-family:var(--mono)}
+        .token-badge{
+            font-size:11px;padding:.25rem .55rem;border-radius:100px;
+            background:var(--bg-200);color:var(--color-secondary);
+            border:1px solid var(--color-border);font-weight:600;font-family:var(--mono);
+        }
+        .dark-mode .token-badge{color:var(--color-accent)}
+
+        /* Links */
+        .links{
+            margin-top:1.5rem;margin-bottom:1.5rem;display:flex;flex-wrap:wrap;
+            justify-content:center;gap:.75rem;font-size:12px;
+        }
+        .links a{color:var(--text-secondary);font-weight:500;transition:color var(--transition)}
+        .links a:hover{color:var(--color-secondary);opacity:1}
+        .dark-mode .links a:hover{color:var(--color-accent)}
+        .links .sep{opacity:.3;color:var(--text-secondary)}
+
+        /* Footer */
+        footer{
+            padding:1.25rem;text-align:center;font-size:11px;color:var(--text-secondary);
+            border-top:1px solid var(--color-border);width:100%;transition:all .3s;
+        }
+
+        @media(max-width:540px){
+            .info-section{grid-template-columns:1fr}
+            .card{padding:1.25rem}
+            .hero h2{font-size:20px}
+        }
+    </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="navbar-content">
-            <a href="http://46.225.30.187/" class="navbar-brand">
-                <svg width="30" height="20" viewBox="0 0 125 86" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+    <header class="header">
+        <div class="header-inner">
+            <div class="header-left">
+                <svg viewBox="0 0 125 86" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0 0 C4.65 4.23 5.79 9.68 7.09 15.62 C8.41 21.18 10.06 25.1 14.72 28.56 C20.1 31.38 24.77 32.16 30.72 30.56 C34.86 28.52 36.66 26.54 38.84 22.5 C40.67 19.13 41.47 17.73 44.72 15.56 C47.3 20.77 46.34 24 44.84 29.43 C40.78 40.81 33.12 49.57 22.72 55.56 C13.28 59.91 3.47 61.59 -6.47 57.94 C-20.15 51.68 -27.12 43.07 -32.59 29.25 C-34.19 20.71 -34.33 12.37 -30.28 4.56 C-22.13 -5.1 -10.58 -7.39 0 0 Z" fill="#4901FF" transform="translate(33.28,24.44)"/>
                     <path d="M0 0 C10.09 6.6 17.64 15.51 20.59 27.38 C21.87 35.58 21.85 43.56 18 51 C14.35 55.33 10.62 58.67 4.88 59.4 C-3.03 59.34 -8.26 58.88 -14.12 53.25 C-17.87 48.7 -18.8 43.14 -20.04 37.52 C-21.41 32.48 -22.87 29.81 -27.12 26.75 C-31.96 24.27 -36.79 23.27 -42.14 24.49 C-47.72 26.74 -49.97 30.54 -52.68 35.76 C-54 38 -54 38 -57 40 C-58.58 38.42 -58.28 36.88 -58.38 34.69 C-58.22 23.85 -52.44 14.54 -45 7 C-32.28 -4.18 -15.38 -8.02 0 0 Z" fill="#4901FF" transform="translate(104,6)"/>
+                    <path d="M0 0 C2.18 2.07 2.85 3.64 3.63 6.55 C2.75 9.31 2.75 9.31 1.18 12.34 C0.61 13.49 0.04 14.63 -0.54 15.81 C-0.84 16.41 -1.15 17.02 -1.46 17.65 C-3.02 20.89 -4.37 24.23 -5.73 27.56 C-6.29 28.93 -6.86 30.29 -7.42 31.66 C-8.28 33.75 -9.14 35.85 -10 37.94 C-10.84 40 -11.69 42.07 -12.54 44.12 C-13.04 45.34 -13.53 46.55 -14.05 47.79 C-15.37 50.55 -15.37 50.55 -17.37 51.55 C-26.01 44.98 -31.5 36.33 -33.37 25.55 C-34.03 17.94 -33.91 11.39 -30.37 4.55 C-21.85 -5.54 -11.02 -6.85 0 0 Z" fill="#4901FF" transform="translate(33.37,24.45)"/>
+                    <path d="M0 0 C-0.66 0.33 -1.32 0.66 -2 1 C-2 18.82 -2 36.64 -2 55 C-5.08 51.92 -5.44 47.8 -6.41 43.67 C-7.84 37.94 -9.28 34.24 -14.12 30.75 C-18.96 28.27 -23.79 27.27 -29.14 28.49 C-34.72 30.74 -36.97 34.54 -39.68 39.76 C-41 42 -41 42 -44 44 C-45.58 42.42 -45.28 40.88 -45.38 38.69 C-45.22 27.85 -39.44 18.54 -32 11 C-22.82 2.93 -12.21 -0.97 0 0 Z" fill="#4901FF" transform="translate(91,2)"/>
+                    <path d="M0 0 C2 1 2 1 2.69 2.71 C4.06 12.9 -2.7 22.33 -8.25 30.19 C-13.23 35.28 -19.17 39.77 -26 42 C-27.32 42 -28.64 42 -30 42 C-29.08 38.96 -28.07 35.99 -27 33 C-26.78 32.36 -26.57 31.72 -26.35 31.07 C-21.87 18.08 -21.87 18.08 -17.34 15.47 C-15.46 14.95 -13.57 14.48 -11.66 14.05 C-6.47 12 -4.55 6.68 -2 2 C-1.34 1.34 -0.68 0.68 0 0 Z" fill="#4901FF" transform="translate(77,40)"/>
+                    <path d="M0 0 C0 6.93 0 13.86 0 21 C-0.84 21.22 -0.84 21.22 -5.06 22.31 C-11.29 24.52 -13.51 27.85 -16.56 33.54 C-18 36 -18 36 -21 38 C-22.58 36.42 -22.28 34.88 -22.38 32.69 C-22.22 21.79 -16.38 12.65 -9 5 C-3.22 0 -3.22 0 0 0 Z" fill="#4901FF" transform="translate(68,8)"/>
+                    <path d="M0 0 C2.57 3.85 1.83 5.59 1 10 C-1.69 11.25 -1.69 11.25 -5 12 C-7.94 10.56 -7.94 10.56 -10 8 C-10.06 4.38 -10.06 4.38 -9 1 C-6.05 -1.53 -3.57 -1.22 0 0 Z" fill="#4901FF" transform="translate(67,37)"/>
+                    <path d="M0 0 C1.32 0 2.64 0 4 0 C4 3.63 4 7.26 4 11 C0 10 0 10 -2 8 C-1.42 1.42 -1.42 1.42 0 0 Z" fill="#4901FF" transform="translate(59,37)"/>
                 </svg>
-                <div>
-                    <div class="brand-name">Prime Chain</div>
-                    <div class="brand-sub">Testnet Faucet</div>
-                </div>
-            </a>
-            <div class="navbar-links">
-                <a href="http://46.225.30.187/">Explorer</a>
-                <a href="http://46.225.30.187:3001">Docs</a>
-                <a href="https://github.com/PrimeNumbersLabs/prime-chain" target="_blank">GitHub</a>
-                <span class="chain-badge">Chain ID: <strong>7919</strong></span>
+                <span class="header-title">Faucet</span>
             </div>
-        </div>
-    </nav>
-
-    <!-- Hero -->
-    <div class="hero">
-        <div class="hero-inner">
-            <div class="hero-icon">&#128167;</div>
-            <h1>Prime Chain Testnet Faucet</h1>
-            <p>Claim free testnet tokens to start building on Prime Chain</p>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-container">
-        <!-- Token Selection -->
-        <div class="token-grid" id="tokenGrid">
-            <div class="token-card selected" data-token="PRIM" onclick="selectToken('PRIM')">
-                <div class="token-icon prim">P</div>
-                <div class="token-name">PRIM</div>
-                <div class="token-amount">1,000 PRIM</div>
-                <span class="token-method api">Server Drip</span>
-            </div>
-            <div class="token-card" data-token="USDC" onclick="selectToken('USDC')">
-                <div class="token-icon usdc">$</div>
-                <div class="token-name">MockUSDC</div>
-                <div class="token-amount">10,000 USDC</div>
-                <span class="token-method wallet">MetaMask</span>
-            </div>
-            <div class="token-card" data-token="USDT" onclick="selectToken('USDT')">
-                <div class="token-icon usdt">&#8366;</div>
-                <div class="token-name">MockUSDT</div>
-                <div class="token-amount">10,000 USDT</div>
-                <span class="token-method wallet">MetaMask</span>
-            </div>
-            <div class="token-card" data-token="DAI" onclick="selectToken('DAI')">
-                <div class="token-icon dai">&#9830;</div>
-                <div class="token-name">MockDAI</div>
-                <div class="token-amount">10,000 DAI</div>
-                <span class="token-method wallet">MetaMask</span>
-            </div>
-        </div>
-
-        <!-- Claim Card -->
-        <div class="claim-card">
-            <h2 id="claimTitle">&#128167; Claim PRIM Tokens</h2>
-
-            <div class="input-group" id="addressInputGroup">
-                <input type="text" id="addressInput" placeholder="Enter your wallet address (0x...)" spellcheck="false" autocomplete="off">
-                <button class="claim-btn" id="claimBtn" onclick="handleClaim()">
-                    Request Tokens
+            <div class="header-actions">
+                <div class="chain-pill"><span class="chain-dot"></span>Testnet</div>
+                <button class="theme-toggle" id="themeBtn" title="Toggle theme">
+                    <svg id="sunIcon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 1V3M11 19V21M3 11H1M5.31 5.31L3.9 3.9M16.69 5.31L18.1 3.9M5.31 16.69L3.9 18.1M16.69 16.69L18.1 18.1M21 11H19M16 11C16 13.76 13.76 16 11 16S6 13.76 6 11 8.24 6 11 6s5 2.24 5 5Z"/>
+                    </svg>
+                    <svg id="moonIcon" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                    </svg>
                 </button>
             </div>
+        </div>
+    </header>
 
-            <div class="metamask-hint" id="metamaskHint">
-                <p><strong>MetaMask Required</strong> &mdash; This token is claimed directly from the smart contract via your wallet.</p>
-                <p>Contract: <code id="hintContract"></code></p>
-                <p>The <code>faucet()</code> function mints 10,000 tokens to your connected wallet. Click the button above to initiate the transaction.</p>
+    <div class="container">
+        <div class="hero">
+            <h2 class="gradient-title">Prime Chain Faucet</h2>
+            <p>Get testnet PRIM tokens for development and testing on Prime Chain.</p>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Request PRIM</div>
+            <div class="card-desc">Enter your wallet address to receive 1,000 testnet PRIM. Rate limited to 1 request per address per hour.</div>
+
+            <form id="faucet-form" autocomplete="off">
+                <label for="address">Wallet Address</label>
+                <div class="input-wrap">
+                    <input type="text" id="address" name="address" placeholder="0x..." required pattern="^0x[a-fA-F0-9]{40}$" spellcheck="false">
+                    <button type="button" class="wallet-btn" id="connect-btn" title="Connect MetaMask">Connect</button>
+                    <button type="button" class="wallet-btn" id="paste-btn" title="Paste from clipboard">Paste</button>
+                </div>
+                <button type="submit" class="submit-btn" id="submit-btn">
+                    <div>
+                        <span class="spinner" id="spinner"></span>
+                        <span id="btn-text">Request 1,000 PRIM</span>
+                    </div>
+                </button>
+            </form>
+
+            <div class="result" id="result"></div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-card">
+                <div class="info-label">Amount</div>
+                <div class="info-value accent">1,000 PRIM</div>
             </div>
-
-            <div class="status-msg" id="statusMsg"></div>
-            <div class="cooldown-display" id="cooldownDisplay">
-                &#9203; Cooldown active &mdash; next PRIM claim available in <strong id="cooldownTimer"></strong>
+            <div class="info-card">
+                <div class="info-label">Rate Limit</div>
+                <div class="info-value">1 req / hour</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Chain ID</div>
+                <div class="info-value accent">7919</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Currency</div>
+                <div class="info-value">PRIM</div>
             </div>
         </div>
 
-        <!-- Recent Drips + Network Info -->
-        <div class="bottom-grid">
-            <div class="recent-card">
-                <div class="card-head">
-                    <span>Recent Claims</span>
-                    <button onclick="clearHistory()" style="background:none;border:none;color:#8c98a4;font-size:0.75rem;cursor:pointer;font-family:inherit;">Clear</button>
+        <div class="tokens-section">
+            <div class="tokens-title">Need test tokens?</div>
+            <div class="token-row">
+                <div>
+                    <div class="token-name">MockUSDC</div>
+                    <div class="token-hint">0xb22f...238d</div>
                 </div>
-                <ul class="drip-list" id="dripList">
-                    <li class="drip-empty">No claims yet. Request tokens above!</li>
-                </ul>
+                <span class="token-badge">faucet()</span>
             </div>
-            <div class="network-card">
-                <div class="card-head"><span>Network Details</span></div>
-                <div class="net-row"><span class="net-label">Network Name</span><span class="net-val">Prime Chain Testnet</span></div>
-                <div class="net-row"><span class="net-label">Chain ID</span><span class="net-val">7919</span></div>
-                <div class="net-row">
-                    <span class="net-label">RPC URL</span>
-                    <span class="net-val copyable" onclick="copyText('http://46.225.30.187:8545')">http://46.225.30.187:8545</span>
+            <div class="token-row">
+                <div>
+                    <div class="token-name">MockUSDT</div>
+                    <div class="token-hint">0x877f...5c17</div>
                 </div>
-                <div class="net-row"><span class="net-label">Currency</span><span class="net-val">PRIM</span></div>
-                <div class="net-row">
-                    <span class="net-label">Explorer</span>
-                    <span class="net-val"><a href="http://46.225.30.187/" target="_blank">http://46.225.30.187/</a></span>
-                </div>
-                <button class="add-network-btn" onclick="addNetwork()">Add Prime Chain to MetaMask</button>
+                <span class="token-badge">faucet()</span>
             </div>
+            <div class="token-row">
+                <div>
+                    <div class="token-name">MockDAI</div>
+                    <div class="token-hint">0xb88d...f4b6</div>
+                </div>
+                <span class="token-badge">faucet()</span>
+            </div>
+            <p style="margin-top:.6rem;font-size:12px;color:var(--text-secondary);line-height:1.5">
+                Mock stablecoins have a public <code style="font-family:var(--mono);background:var(--bg-200);padding:2px 6px;border-radius:4px;font-size:11px;transition:all .3s">faucet()</code> function. Call it from any wallet or contract to receive free test tokens.
+            </p>
         </div>
 
-        <!-- FAQ -->
-        <div class="faq-section">
-            <h2>Frequently Asked Questions</h2>
-
-            <div class="faq-item">
-                <div class="faq-q" onclick="toggleFaq(this)">
-                    What is a testnet faucet?
-                    <span class="arrow">&#9660;</span>
-                </div>
-                <div class="faq-a"><div class="faq-a-inner">
-                    A testnet faucet distributes free test tokens that have no real-world value. These tokens let developers and users interact with the Prime Chain testnet to test smart contracts, DApps, and integrations without risking real funds.
-                </div></div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-q" onclick="toggleFaq(this)">
-                    How much can I claim?
-                    <span class="arrow">&#9660;</span>
-                </div>
-                <div class="faq-a"><div class="faq-a-inner">
-                    Each PRIM faucet request dispenses <strong>1,000 PRIM</strong> to your wallet. For mock ERC-20 tokens (USDC, USDT, DAI), the contract's <code>faucet()</code> function mints <strong>10,000 tokens</strong> per call. This should be enough for most testing scenarios.
-                </div></div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-q" onclick="toggleFaq(this)">
-                    How often can I claim?
-                    <span class="arrow">&#9660;</span>
-                </div>
-                <div class="faq-a"><div class="faq-a-inner">
-                    PRIM tokens are rate-limited to <strong>1 request per address per hour</strong>. Mock ERC-20 tokens (USDC, USDT, DAI) can be claimed at any time since the <code>faucet()</code> function is public and does not have built-in cooldowns.
-                </div></div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-q" onclick="toggleFaq(this)">
-                    What are mock tokens?
-                    <span class="arrow">&#9660;</span>
-                </div>
-                <div class="faq-a"><div class="faq-a-inner">
-                    Mock tokens (MockUSDC, MockUSDT, MockDAI) are ERC-20 test tokens deployed on Prime Chain that simulate popular stablecoins. They allow you to test DEX swaps, lending protocols, and other DeFi integrations. Each contract has a public <code>faucet()</code> function that anyone can call to mint tokens.
-                </div></div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-q" onclick="toggleFaq(this)">
-                    How do I add Prime Chain to MetaMask?
-                    <span class="arrow">&#9660;</span>
-                </div>
-                <div class="faq-a"><div class="faq-a-inner">
-                    Click the <strong>"Add Prime Chain to MetaMask"</strong> button in the Network Details panel above, or manually add it in MetaMask with these settings:<br><br>
-                    &bull; <strong>Network Name:</strong> Prime Chain Testnet<br>
-                    &bull; <strong>RPC URL:</strong> <code>http://46.225.30.187:8545</code><br>
-                    &bull; <strong>Chain ID:</strong> <code>7919</code><br>
-                    &bull; <strong>Currency Symbol:</strong> <code>PRIM</code><br>
-                    &bull; <strong>Block Explorer:</strong> <code>http://46.225.30.187/</code>
-                </div></div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-q" onclick="toggleFaq(this)">
-                    Why hasn't my transaction confirmed?
-                    <span class="arrow">&#9660;</span>
-                </div>
-                <div class="faq-a"><div class="faq-a-inner">
-                    Transactions usually confirm within a few seconds on Prime Chain. If your transaction is pending:<br><br>
-                    &bull; Check the <a href="http://46.225.30.187/" target="_blank">block explorer</a> using the transaction hash.<br>
-                    &bull; Ensure you are connected to the correct network (Chain ID 7919).<br>
-                    &bull; The faucet wallet may temporarily be out of funds &mdash; try again later.<br>
-                    &bull; For MetaMask claims, make sure you have some PRIM for gas (claim PRIM first!).
-                </div></div>
-            </div>
+        <div class="links">
+            <a href="http://46.225.30.187" target="_blank">Explorer</a>
+            <span class="sep">·</span>
+            <a href="http://46.225.30.187:3001" target="_blank">Docs</a>
+            <span class="sep">·</span>
+            <a href="http://46.225.30.187:3001/getting-started/wallet-setup" target="_blank">Wallet Setup</a>
+            <span class="sep">·</span>
+            <a href="https://github.com/PrimeNumbersLabs/prime-chain" target="_blank">GitHub</a>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div>
-            Prime Chain Faucet &copy; 2026 Prime Numbers Labs
-            &nbsp;&middot;&nbsp;
-            <a href="http://46.225.30.187/">Explorer</a>
-            <a href="http://46.225.30.187:3001">Docs</a>
-            <a href="https://github.com/PrimeNumbersLabs/prime-chain" target="_blank">GitHub</a>
-        </div>
+    <footer>
+        &copy; 2026 Prime Numbers Labs &middot; Prime Chain Testnet
     </footer>
 
-    <div class="toast" id="toast"></div>
+    <script>
+    const form = document.getElementById('faucet-form');
+    const addrInput = document.getElementById('address');
+    const resultEl = document.getElementById('result');
+    const submitBtn = document.getElementById('submit-btn');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btn-text');
+    const pasteBtn = document.getElementById('paste-btn');
+    const connectBtn = document.getElementById('connect-btn');
+    const themeBtn = document.getElementById('themeBtn');
+    const sunIcon = document.getElementById('sunIcon');
+    const moonIcon = document.getElementById('moonIcon');
 
-<script>
-(function() {
-    'use strict';
+    let isDark = localStorage.getItem('theme') === 'dark';
+    applyTheme();
 
-    const EXPLORER_BASE = 'http://46.225.30.187';
-    const CHAIN_ID = 7919;
-    const CHAIN_HEX = '0x1eef';
-    const RPC_URL = 'http://46.225.30.187:8545';
+    themeBtn.addEventListener('click', () => {
+        isDark = !isDark;
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        applyTheme();
+    });
 
-    const TOKENS = {
-        PRIM: {
-            name: 'PRIM',
-            amount: '1,000 PRIM',
-            method: 'api',
-            decimals: 18,
-        },
-        USDC: {
-            name: 'MockUSDC',
-            amount: '10,000 USDC',
-            method: 'wallet',
-            contract: '0xb22f77d89122e9e3784bfd3eee9616273f38238d',
-            decimals: 6,
-        },
-        USDT: {
-            name: 'MockUSDT',
-            amount: '10,000 USDT',
-            method: 'wallet',
-            contract: '0x877feca38919acd7aaf7cb81f100e0454aa95c17',
-            decimals: 6,
-        },
-        DAI: {
-            name: 'MockDAI',
-            amount: '10,000 DAI',
-            method: 'wallet',
-            contract: '0xb88d63a65691effbf4b6808325b1588912c15cf4',
-            decimals: 18,
-        },
-    };
+    function applyTheme() {
+        document.body.classList.toggle('dark-mode', isDark);
+        sunIcon.style.display = isDark ? 'none' : 'block';
+        moonIcon.style.display = isDark ? 'block' : 'none';
+    }
 
-    // faucet() function selector: keccak256("faucet()") = 0xde5f72fd
-    const FAUCET_SELECTOR = '0xde5f72fd';
-
-    let selectedToken = 'PRIM';
-    let claiming = false;
-
-    // ── Token Selection ──
-    window.selectToken = function(token) {
-        selectedToken = token;
-        document.querySelectorAll('.token-card').forEach(c => {
-            c.classList.toggle('selected', c.dataset.token === token);
-        });
-
-        const info = TOKENS[token];
-        const titleEl = document.getElementById('claimTitle');
-        const btnEl = document.getElementById('claimBtn');
-        const inputGroup = document.getElementById('addressInputGroup');
-        const hint = document.getElementById('metamaskHint');
-        const hintContract = document.getElementById('hintContract');
-
-        titleEl.innerHTML = '&#128167; Claim ' + info.name + ' Tokens';
-        hideStatus();
-
-        if (info.method === 'api') {
-            btnEl.textContent = 'Request Tokens';
-            inputGroup.querySelector('input').style.display = '';
-            inputGroup.querySelector('input').placeholder = 'Enter your wallet address (0x...)';
-            hint.classList.remove('show');
+    connectBtn.addEventListener('click', async () => {
+        if (typeof window.ethereum !== 'undefined') {
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (accounts && accounts[0]) {
+                    addrInput.value = accounts[0];
+                    addrInput.focus();
+                    connectBtn.textContent = '✓ Connected';
+                    connectBtn.style.borderColor = 'var(--success)';
+                    connectBtn.style.color = 'var(--success)';
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: '0x1EEF',
+                                chainName: 'Prime Chain Testnet',
+                                nativeCurrency: { name: 'PRIM', symbol: 'PRIM', decimals: 18 },
+                                rpcUrls: [window.location.protocol + '//' + window.location.hostname + ':8545'],
+                                blockExplorerUrls: [window.location.protocol + '//' + window.location.hostname]
+                            }]
+                        });
+                    } catch {}
+                }
+            } catch (err) {
+                showResult('error', 'Wallet connection denied');
+            }
         } else {
-            btnEl.textContent = 'Claim via MetaMask';
-            inputGroup.querySelector('input').style.display = 'none';
-            hint.classList.add('show');
-            hintContract.textContent = info.contract;
+            showResult('error', 'No wallet detected. Install MetaMask to use this feature.');
         }
+    });
 
-        updateCooldown();
-    };
+    pasteBtn.addEventListener('click', async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            if (text) {
+                addrInput.value = text.trim();
+                addrInput.focus();
+            }
+        } catch { addrInput.focus(); }
+    });
 
-    // ── Claim Handler ──
-    window.handleClaim = async function() {
-        if (claiming) return;
-
-        const info = TOKENS[selectedToken];
-        if (info.method === 'api') {
-            await claimPrim();
-        } else {
-            await claimERC20(selectedToken);
-        }
-    };
-
-    async function claimPrim() {
-        const addr = document.getElementById('addressInput').value.trim();
-        if (!/^0x[0-9a-fA-F]{40}$/.test(addr)) {
-            showStatus('error', 'Please enter a valid Ethereum address (0x + 40 hex chars)');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const addr = addrInput.value.trim();
+        if (!/^0x[a-fA-F0-9]{40}$/.test(addr)) {
+            showResult('error', 'Invalid address. Must be 0x followed by 40 hex characters.');
             return;
         }
 
-        const btn = document.getElementById('claimBtn');
-        claiming = true;
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-sm"></span> Requesting...';
-        hideStatus();
-
+        setLoading(true);
         try {
-            const res = await fetch('/faucet', {
+            const r = await fetch('/faucet', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ address: addr }),
+                body: JSON.stringify({ address: addr })
             });
-            const data = await res.json();
-
-            if (data.success && data.tx_hash) {
-                showStatus('success',
-                    'Sent 1,000 PRIM! Tx: <a href="' + EXPLORER_BASE + '/#/tx/' + data.tx_hash + '" target="_blank">' +
-                    data.tx_hash.slice(0, 14) + '...' + data.tx_hash.slice(-6) + '</a>'
+            const data = await r.json();
+            if (data.success) {
+                const txUrl = '/#/tx/' + data.tx_hash;
+                showResult('success',
+                    'Sent 1,000 PRIM successfully!<br>' +
+                    'Tx: <a href="' + txUrl + '" target="_blank">' + data.tx_hash.slice(0,18) + '...</a>'
                 );
-                saveDrip('PRIM', addr, data.tx_hash);
-                setCooldown();
             } else {
-                showStatus('error', data.error || 'Faucet request failed');
-                if (data.error && data.error.includes('rate limited')) {
-                    setCooldown();
-                }
+                showResult('error', data.error || 'Request failed. Try again later.');
             }
-        } catch (e) {
-            showStatus('error', 'Network error: ' + e.message);
+        } catch (err) {
+            showResult('error', 'Network error: ' + err.message);
         } finally {
-            claiming = false;
-            btn.disabled = false;
-            btn.textContent = 'Request Tokens';
+            setLoading(false);
         }
+    });
+
+    function setLoading(on) {
+        submitBtn.disabled = on;
+        spinner.style.display = on ? 'inline-block' : 'none';
+        btnText.textContent = on ? 'Sending...' : 'Request 1,000 PRIM';
     }
 
-    async function claimERC20(token) {
-        const info = TOKENS[token];
-        if (!window.ethereum) {
-            showStatus('error', 'MetaMask not detected. Please install MetaMask and refresh.');
-            return;
-        }
-
-        const btn = document.getElementById('claimBtn');
-        claiming = true;
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-sm"></span> Confirm in wallet...';
-        hideStatus();
-
-        try {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const from = accounts[0];
-
-            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-            if (parseInt(chainId, 16) !== CHAIN_ID) {
-                showStatus('info', 'Please switch to Prime Chain (ID 7919) in MetaMask.');
-                try {
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: CHAIN_HEX }],
-                    });
-                } catch (switchErr) {
-                    if (switchErr.code === 4902) {
-                        await addNetworkToMetaMask();
-                    } else {
-                        throw switchErr;
-                    }
-                }
-            }
-
-            const txHash = await window.ethereum.request({
-                method: 'eth_sendTransaction',
-                params: [{
-                    from: from,
-                    to: info.contract,
-                    data: FAUCET_SELECTOR,
-                    gas: '0x30D40', // 200,000
-                }],
-            });
-
-            showStatus('success',
-                'Claimed ' + info.amount + '! Tx: <a href="' + EXPLORER_BASE + '/#/tx/' + txHash + '" target="_blank">' +
-                txHash.slice(0, 14) + '...' + txHash.slice(-6) + '</a>'
-            );
-            saveDrip(token, from, txHash);
-        } catch (e) {
-            if (e.code === 4001) {
-                showStatus('info', 'Transaction cancelled by user.');
-            } else {
-                showStatus('error', 'Error: ' + (e.message || e).toString().slice(0, 100));
-            }
-        } finally {
-            claiming = false;
-            btn.disabled = false;
-            btn.textContent = 'Claim via MetaMask';
-        }
+    function showResult(type, html) {
+        resultEl.className = 'result show ' + type;
+        resultEl.innerHTML = html;
     }
-
-    // ── Add network to MetaMask ──
-    window.addNetwork = async function() {
-        if (!window.ethereum) {
-            showToast('MetaMask not detected');
-            return;
-        }
-        await addNetworkToMetaMask();
-        showToast('Network added to MetaMask!');
-    };
-
-    async function addNetworkToMetaMask() {
-        await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-                chainId: CHAIN_HEX,
-                chainName: 'Prime Chain Testnet',
-                nativeCurrency: { name: 'PRIM', symbol: 'PRIM', decimals: 18 },
-                rpcUrls: [RPC_URL],
-                blockExplorerUrls: [EXPLORER_BASE + '/'],
-            }],
-        });
-    }
-
-    // ── Status Messages ──
-    function showStatus(type, msg) {
-        const el = document.getElementById('statusMsg');
-        el.className = 'status-msg show ' + type;
-        el.innerHTML = msg;
-    }
-
-    function hideStatus() {
-        document.getElementById('statusMsg').className = 'status-msg';
-    }
-
-    // ── Cooldown Timer ──
-    function setCooldown() {
-        const expires = Date.now() + 60 * 60 * 1000;
-        localStorage.setItem('faucet_cooldown', expires.toString());
-        updateCooldown();
-    }
-
-    function updateCooldown() {
-        const display = document.getElementById('cooldownDisplay');
-        const timer = document.getElementById('cooldownTimer');
-        const expires = parseInt(localStorage.getItem('faucet_cooldown') || '0');
-        const remaining = expires - Date.now();
-
-        if (remaining > 0 && selectedToken === 'PRIM') {
-            const mins = Math.floor(remaining / 60000);
-            const secs = Math.floor((remaining % 60000) / 1000);
-            timer.textContent = mins + 'm ' + secs + 's';
-            display.classList.add('show');
-        } else {
-            display.classList.remove('show');
-        }
-    }
-
-    setInterval(updateCooldown, 1000);
-
-    // ── Recent Drips (localStorage) ──
-    function getDrips() {
-        try { return JSON.parse(localStorage.getItem('faucet_drips') || '[]'); }
-        catch { return []; }
-    }
-
-    function saveDrip(token, addr, txHash) {
-        const drips = getDrips();
-        drips.unshift({ token, addr, txHash, time: Date.now() });
-        if (drips.length > 5) drips.length = 5;
-        localStorage.setItem('faucet_drips', JSON.stringify(drips));
-        renderDrips();
-    }
-
-    function renderDrips() {
-        const list = document.getElementById('dripList');
-        const drips = getDrips();
-
-        if (!drips.length) {
-            list.innerHTML = '<li class="drip-empty">No claims yet. Request tokens above!</li>';
-            return;
-        }
-
-        list.innerHTML = drips.map(d => {
-            const shortAddr = d.addr ? d.addr.slice(0, 8) + '...' + d.addr.slice(-4) : '?';
-            const ago = timeAgo(d.time);
-            const tok = d.token.toLowerCase();
-            const txLink = d.txHash ? EXPLORER_BASE + '/#/tx/' + d.txHash : '#';
-            return `
-                <li class="drip-item">
-                    <span class="drip-token ${tok}">${d.token}</span>
-                    <a href="${txLink}" target="_blank" class="drip-addr">${shortAddr}</a>
-                    <span class="drip-time">${ago}</span>
-                </li>
-            `;
-        }).join('');
-    }
-
-    window.clearHistory = function() {
-        localStorage.removeItem('faucet_drips');
-        renderDrips();
-    };
-
-    function timeAgo(ts) {
-        const secs = Math.floor((Date.now() - ts) / 1000);
-        if (secs < 60) return secs + 's ago';
-        if (secs < 3600) return Math.floor(secs / 60) + 'm ago';
-        if (secs < 86400) return Math.floor(secs / 3600) + 'h ago';
-        return Math.floor(secs / 86400) + 'd ago';
-    }
-
-    // ── FAQ Accordion ──
-    window.toggleFaq = function(el) {
-        el.parentElement.classList.toggle('open');
-    };
-
-    // ── Toast ──
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('visible');
-        setTimeout(() => t.classList.remove('visible'), 2500);
-    }
-
-    window.copyText = function(text) {
-        navigator.clipboard.writeText(text).then(() => showToast('Copied!'));
-    };
-
-    // ── Init ──
-    renderDrips();
-    updateCooldown();
-})();
-</script>
+    </script>
 </body>
 </html>
