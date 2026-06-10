@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
     <title>Mersennet Faucet</title>
     <meta name="description" content="Get testnet PRIM and mock tokens for development on Mersennet (Chain ID 131071)">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg viewBox='0 0 96 96' xmlns='http://www.w3.org/2000/svg'><g fill='%237dff9b'><rect x='8' y='14' width='12' height='68' rx='6'/><rect x='25' y='14' width='12' height='30' rx='6'/><rect x='42' y='14' width='12' height='46' rx='6'/><rect x='59' y='14' width='12' height='30' rx='6'/><rect x='76' y='14' width='12' height='68' rx='6'/></g></svg>">
@@ -13,21 +14,21 @@
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
         :root{
-            --color-main:#7c5cff;
-            --color-secondary:#6A2FFF;
-            --color-deep:#4901FF;
-            --color-accent:#00FFF9;
-            --gradient-primary:linear-gradient(90deg,#9461FF 35%,#6A2FFF 100%);
-            --gradient-linear:linear-gradient(90deg,#6A2FFF,#00FFF9);
+            --color-main:#0fae62;
+            --color-secondary:#0a8f50;
+            --color-deep:#07703e;
+            --color-accent:#7dff9b;
+            --gradient-primary:linear-gradient(90deg,#0fae62 35%,#0a8f50 100%);
+            --gradient-linear:linear-gradient(90deg,#0a8f50,#7dff9b);
 
-            --text-primary:#3A334D;
-            --text-secondary:#99B2C6;
+            --text-primary:#2E3B33;
+            --text-secondary:#8FA89A;
             --text-white:#FFF;
-            --color-border:#F1F5F7;
+            --color-border:#EDF4EF;
 
-            --bg-100:#F8F9FE;
-            --bg-200:#F3EDFF;
-            --bg-300:#E8DCFF;
+            --bg-100:#F8FDF9;
+            --bg-200:#EAF9EF;
+            --bg-300:#D6F4E0;
             --bg-card:#FFFFFF;
 
             --success:#1AB280;
@@ -45,20 +46,21 @@
             --transition:200ms ease;
         }
 
-        /* Mersennet cosmic theme */
+        /* Mersennet brand — terminal green on pure black (matches mersennet.com) */
         .dark-mode{
-            --color-main:#9d86ff;
-            --color-secondary:#9d86ff;
-            --text-primary:#F0ECFF;
-            --text-secondary:#9b91c4;
-            --color-border:#1d1542;
-            --bg-100:#080518;
-            --bg-200:#140d33;
-            --bg-300:#1d1542;
-            --bg-card:#0e0926;
-            --success:#42E342;
+            --color-main:#7dff9b;
+            --color-secondary:#7dff9b;
+            --gradient-primary:linear-gradient(90deg,#7dff9b 0%,#2bd96a 100%);
+            --text-primary:#ececef;
+            --text-secondary:#9a9aa6;
+            --color-border:#1c201d;
+            --bg-100:#000000;
+            --bg-200:#101312;
+            --bg-300:#1c201d;
+            --bg-card:#0a0c0b;
+            --success:#34d399;
             --success-bg:#0e2c13;
-            --danger:#FAB5B5;
+            --danger:#ff8d80;
             --danger-bg:#3a0f14;
         }
 
@@ -120,11 +122,11 @@
             font-size:24px;font-weight:700;margin-bottom:.5rem;
         }
         .hero .gradient-title{
-            background:linear-gradient(82.84deg,var(--text-primary) 51.47%,#9461FF 99.63%);
+            background:linear-gradient(82.84deg,var(--text-primary) 51.47%,#0fae62 99.63%);
             background-clip:text;-webkit-text-fill-color:transparent;
         }
         .dark-mode .hero .gradient-title{
-            background:linear-gradient(82.84deg,#fff 51.47%,#bfa0ff 99.63%);
+            background:linear-gradient(82.84deg,#fff 51.47%,#7dff9b 99.63%);
             background-clip:text;-webkit-text-fill-color:transparent;
         }
         .hero p{color:var(--text-secondary);font-size:14px;line-height:1.6;margin-top:.25rem}
@@ -171,17 +173,18 @@
             background:var(--gradient-primary);transition:all var(--transition);
         }
         .submit-btn div{
-            background:#9461FF;border:solid 1px #9461FF;
+            background:var(--color-main);border:solid 1px var(--color-main);
             padding:.65rem;border-radius:calc(var(--radius-sm) - 2px);
             transition:all .3s;color:white;font-weight:600;font-size:14px;
             font-family:var(--font);
         }
+        .dark-mode .submit-btn div{color:#04130a}
         .submit-btn:hover div{background:transparent}
         .submit-btn:disabled{opacity:.4;cursor:wait}
-        .submit-btn:disabled div{background:#9461FF}
+        .submit-btn:disabled div{background:var(--color-main)}
 
         .spinner{display:none;width:14px;height:14px;border:2px solid transparent;
-            border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;
+            border-top-color:currentColor;border-radius:50%;animation:spin .6s linear infinite;
             margin-right:.4rem;vertical-align:middle}
         @keyframes spin{to{transform:rotate(360deg)}}
 
