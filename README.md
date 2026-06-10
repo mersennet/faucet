@@ -1,12 +1,12 @@
 # Mersennet Faucet
 
-Testnet faucet for Mersennet — distributes testnet PRIM to developers.
+Testnet faucet for Mersennet — distributes testnet MRSN to developers.
 
 **Live:** [https://faucet.mersennet.com](https://faucet.mersennet.com)
 
 ## Features
 
-- Request 1,000 testnet PRIM per address per hour
+- Request 1,000 testnet MRSN per address per hour
 - MetaMask wallet connect with automatic chain configuration (Chain ID 131071)
 - Mock stablecoins (USDC, USDT, DAI) via `faucet()` contract calls
 - Light/dark theme toggle (persisted in localStorage, cosmic dark default)
