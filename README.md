@@ -1,39 +1,33 @@
-# Prime Chain Faucet
+# Mersennet Faucet
 
-Testnet faucet for Prime Chain — distributes testnet PRIM and mock tokens to developers.
+Testnet faucet for Mersennet — distributes testnet PRIM to developers.
 
-**Live:** [http://46.225.30.187:4005](http://46.225.30.187:4005)
+**Live:** [https://faucet.mersennet.com](https://faucet.mersennet.com)
 
 ## Features
 
 - Request 1,000 testnet PRIM per address per hour
-- MetaMask wallet connect with automatic chain configuration
+- MetaMask wallet connect with automatic chain configuration (Chain ID 7919)
 - Mock stablecoins (USDC, USDT, DAI) via `faucet()` contract calls
-- Light/dark theme toggle (persisted in localStorage)
+- Light/dark theme toggle (persisted in localStorage, cosmic dark default)
 - Transaction confirmation with explorer link
 
-## Design
+## Architecture
 
-Branded with the PrimeFi/PrimeStaking design system:
-
-- **Sora** font (300 weight default)
-- Purple-dominant palette (`#9461FF` primary, `#6A2FFF` secondary)
-- Light mode default, dark mode via toggle
-- Gradient CTAs matching `primestaking-ui-v2`
-
-## Stack
-
-- Single HTML file with inline CSS/JS
-- Rust backend (`faucet.rs`) using `tiny_http`
+- Single HTML file with inline CSS/JS — no build step
+- API calls go to the same-origin `/api` path; in production, Caddy on
+  `faucet.mersennet.com` reverse-proxies `/api/*` to the faucet backend
+  (`crates/node/src/bin/faucet.rs` in the chain repo) on the testnet host
+- Rust backend using `tiny_http`
 
 ## Deploy
 
 ```bash
-scp index.html user@server:/var/www/faucet/
+rsync index.html root@server:/var/www/faucet/
 ```
 
 ## Related
 
-- [prime-chain](https://github.com/PrimeNumbersLabs/prime-chain) — Core blockchain
-- [primenodes-dashboard](https://github.com/PrimeNumbersLabs/primenodes-dashboard) — Validator dashboard
-- [primescan-explorer](https://github.com/PrimeNumbersLabs/primescan-explorer) — Block explorer
+- [mersennet](https://github.com/mersennet/mersennet) — Core blockchain
+- [explorer](https://github.com/mersennet/explorer) — Block explorer
+- [trade](https://github.com/mersennet/trade) — Perps trading terminal
