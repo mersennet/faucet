@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mersennet Faucet</title>
-    <meta name="description" content="Get testnet PRIM and mock tokens for development on Mersennet (Chain ID 7919)">
+    <meta name="description" content="Get testnet PRIM and mock tokens for development on Mersennet (Chain ID 131071)">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg viewBox='0 0 96 96' xmlns='http://www.w3.org/2000/svg'><g fill='%237dff9b'><rect x='8' y='14' width='12' height='68' rx='6'/><rect x='25' y='14' width='12' height='30' rx='6'/><rect x='42' y='14' width='12' height='46' rx='6'/><rect x='59' y='14' width='12' height='30' rx='6'/><rect x='76' y='14' width='12' height='68' rx='6'/></g></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -317,7 +317,7 @@
             </div>
             <div class="info-card">
                 <div class="info-label">Chain ID</div>
-                <div class="info-value accent">7919</div>
+                <div class="info-value accent">131071</div>
             </div>
             <div class="info-card">
                 <div class="info-label">Currency</div>
@@ -410,7 +410,7 @@
                         await window.ethereum.request({
                             method: 'wallet_addEthereumChain',
                             params: [{
-                                chainId: '0x1EEF',
+                                chainId: '0x1FFFF',
                                 chainName: 'Mersennet Testnet',
                                 nativeCurrency: { name: 'PRIM', symbol: 'PRIM', decimals: 18 },
                                 rpcUrls: ['http://46.225.30.187:8545'],

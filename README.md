@@ -7,7 +7,7 @@ Testnet faucet for Mersennet — distributes testnet PRIM to developers.
 ## Features
 
 - Request 1,000 testnet PRIM per address per hour
-- MetaMask wallet connect with automatic chain configuration (Chain ID 7919)
+- MetaMask wallet connect with automatic chain configuration (Chain ID 131071)
 - Mock stablecoins (USDC, USDT, DAI) via `faucet()` contract calls
 - Light/dark theme toggle (persisted in localStorage, cosmic dark default)
 - Transaction confirmation with explorer link
