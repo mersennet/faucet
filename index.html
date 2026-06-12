@@ -360,7 +360,7 @@
             <div class="token-row">
                 <div>
                     <div class="token-name">MockDAI</div>
-                    <div class="token-hint">0xb88d...f4b6</div>
+                    <div class="token-hint">0xb88d...5cf4</div>
                 </div>
                 <span class="token-badge">faucet()</span>
             </div>
@@ -463,9 +463,9 @@
 
         setLoading(true);
         try {
-            // Same-origin /api path — Caddy on faucet.mersennet.com proxies
+            // Same-origin /faucet path — Caddy on faucet.mersennet.com proxies
             // this to the faucet backend on the testnet host.
-            const r = await fetch('/api/faucet', {
+            const r = await fetch('/faucet', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ address: addr })
