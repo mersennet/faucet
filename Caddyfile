@@ -1,0 +1,39 @@
+# Caddy vhost for faucet.mersennet.com
+#
+# The static page (index.html) is served from disk; the drip request the page
+# makes — POST /faucet — is reverse-proxied to the faucet backend
+# (crates/node/src/bin/faucet.rs), which listens on 0.0.0.0:8080 on the testnet
+# node host and serves POST /faucet, POST /claim-token and GET /health.
+#
+# Replace FAUCET_BACKEND with the node host:port reachable from this Caddy
+# instance (e.g. 127.0.0.1:8080 if co-located, or 10.x.x.x:8080 over a private
+# network — do NOT point at a public :8080 you don't control).
+#
+# Without this proxy, POST /faucet hits the static file server and returns 405,
+# so nobody can claim testnet MRSN.
+
+faucet.mersennet.com {
+	encode gzip
+
+	# Drip + token-mint API: only POST is proxied to the backend; GET /faucet
+	# still serves the static page below.
+	@faucet_api {
+		path /faucet /claim-token
+		method POST
+	}
+	handle @faucet_api {
+		reverse_proxy FAUCET_BACKEND
+	}
+
+	# Backend health check (optional).
+	handle /health {
+		reverse_proxy FAUCET_BACKEND
+	}
+
+	# Static single-page app for everything else (GET /, GET /faucet, assets).
+	handle {
+		root * /var/www/faucet
+		try_files {path} /index.html
+		file_server
+	}
+}
