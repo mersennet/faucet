@@ -1,502 +1,419 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#000000">
-    <title>Mersennet Faucet</title>
-    <meta name="description" content="Get testnet MRSN and mock tokens for development on Mersennet (Chain ID 131071)">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg viewBox='0 0 96 96' xmlns='http://www.w3.org/2000/svg'><g fill='%237dff9b'><rect x='8' y='14' width='12' height='68' rx='6'/><rect x='25' y='14' width='12' height='30' rx='6'/><rect x='42' y='14' width='12' height='46' rx='6'/><rect x='59' y='14' width='12' height='30' rx='6'/><rect x='76' y='14' width='12' height='68' rx='6'/></g></svg>">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#000000" />
+  <title>Mersennet Faucet · Fuel the private, verifiable testnet</title>
+  <meta name="description" content="Claim free testnet MRSN and mock stablecoins (USDC/USDT/DAI) on Mersennet — the private, verifiable Layer 1 (chain 131071)." />
+  <meta property="og:title" content="Mersennet Faucet" />
+  <meta property="og:description" content="Claim free testnet MRSN + mock tokens on Mersennet, the private, verifiable network." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Cg fill='%237dff9b'%3E%3Crect x='8' y='14' width='12' height='68' rx='6'/%3E%3Crect x='25' y='52' width='12' height='30' rx='6'/%3E%3Crect x='42' y='36' width='12' height='46' rx='6'/%3E%3Crect x='59' y='52' width='12' height='30' rx='6'/%3E%3Crect x='76' y='14' width='12' height='68' rx='6'/%3E%3C/g%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#000;--bg-surface:#050706;--bg-card:#0a0d0b;--bg-card-2:#10140f;--bg-elev:#161b15;--bg-hover:#1a2018;
+      --border:#1d241c;--border-soft:#161b15;
+      --accent:#7dff9b;--accent-dim:#2bd96a;--accent-deep:#0a8f50;--teal:#40e0b4;
+      --text:#eef2ee;--text-2:#9aa69d;--text-3:#5f6b62;--text-inverse:#04130a;
+      --up:#1ad598;--down:#ff5240;--warn:#ffb23c;--info:#5b8cff;
+      --up-bg:rgba(26,213,152,.12);--down-bg:rgba(255,82,64,.12);--warn-bg:rgba(255,178,60,.12);
+      --accent-bg:rgba(125,255,155,.1);--teal-bg:rgba(64,224,180,.1);
+      --grad-accent:linear-gradient(90deg,#7dff9b,#2bd96a);
+      --grad-hero:radial-gradient(120% 120% at 50% 0%,rgba(125,255,155,.16),rgba(64,224,180,.05) 38%,rgba(0,0,0,0) 72%);
+      --font:'Sora',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+      --radius:9px;--radius-lg:14px;--radius-xl:18px;--pill:100px;
+      --ease:cubic-bezier(.4,0,.2,1);--bounce:cubic-bezier(.34,1.56,.64,1);
+      --shadow:0 12px 40px rgba(0,0,0,.5);--glow:0 0 0 1px rgba(125,255,155,.18),0 14px 50px rgba(125,255,155,.07);
+    }
+    html.light{
+      --bg:#f6f8f6;--bg-surface:#fff;--bg-card:#fff;--bg-card-2:#f1f4f1;--bg-elev:#eef2ee;--bg-hover:#e9efe9;
+      --border:#dde6dd;--border-soft:#e8eee8;--accent:#0a8f50;--accent-dim:#0fae62;--teal:#0f9b86;
+      --text:#14201a;--text-2:#5a6b60;--text-3:#8aa090;--text-inverse:#fff;
+      --grad-hero:radial-gradient(120% 120% at 50% 0%,rgba(15,174,98,.1),rgba(0,0,0,0) 70%);
+      --shadow:0 8px 30px rgba(20,40,28,.08);--glow:0 0 0 1px rgba(10,143,80,.18),0 10px 36px rgba(10,143,80,.06);
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;
+      -webkit-font-smoothing:antialiased;line-height:1.55;overflow-x:hidden;position:relative}
+    /* ambient background */
+    body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+      background-image:linear-gradient(var(--border-soft) 1px,transparent 1px),linear-gradient(90deg,var(--border-soft) 1px,transparent 1px);
+      background-size:54px 54px;mask-image:radial-gradient(110% 90% at 50% 0%,#000 30%,transparent 75%)}
+    body::after{content:'';position:fixed;z-index:0;pointer-events:none;width:760px;height:560px;left:50%;top:-120px;
+      transform:translateX(-50%);border-radius:50%;filter:blur(120px);background:rgba(125,255,155,.1)}
+    .wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:0 18px 60px}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .mono{font-family:var(--mono)}
+    ::selection{background:rgba(125,255,155,.22)}
+    :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
 
-        :root{
-            --color-main:#0fae62;
-            --color-secondary:#0a8f50;
-            --color-deep:#07703e;
-            --color-accent:#7dff9b;
-            --gradient-primary:linear-gradient(90deg,#0fae62 35%,#0a8f50 100%);
-            --gradient-linear:linear-gradient(90deg,#0a8f50,#7dff9b);
+    /* header */
+    header{position:sticky;top:0;z-index:20;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border-soft)}
+    html.light header{background:rgba(255,255,255,.6)}
+    .hbar{max-width:560px;margin:0 auto;height:58px;display:flex;align-items:center;gap:10px;padding:0 18px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+      font-family:var(--mono);font-size:13px}
+    .brand svg{width:26px;height:26px}
+    .grow{flex:1}
+    .pill{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;border-radius:var(--pill);
+      background:var(--bg-card);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--text-2)}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--up);box-shadow:0 0 8px var(--up);animation:pulse 1.9s var(--ease) infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+    .iconbtn{width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--bg-card);
+      color:var(--text-2);cursor:pointer;display:grid;place-items:center;transition:all .15s var(--ease)}
+    .iconbtn:hover{border-color:var(--accent);color:var(--accent)}
+    .iconbtn svg{width:16px;height:16px}
 
-            --text-primary:#2E3B33;
-            --text-secondary:#8FA89A;
-            --text-white:#FFF;
-            --color-border:#EDF4EF;
+    /* hero */
+    .hero{text-align:center;padding:40px 0 8px}
+    .hero .logo{width:54px;height:54px;margin:0 auto 16px;filter:drop-shadow(0 0 24px rgba(125,255,155,.35))}
+    .hero h1{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1.08}
+    .hero h1 .g{background:var(--grad-accent);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    .hero p{color:var(--text-2);font-size:15px;margin-top:10px}
 
-            --bg-100:#F8FDF9;
-            --bg-200:#EAF9EF;
-            --bg-300:#D6F4E0;
-            --bg-card:#FFFFFF;
+    /* card */
+    .card{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius-lg);position:relative;overflow:hidden}
+    .card.glow{box-shadow:var(--glow)}
+    .card .grad{position:absolute;inset:0;background:var(--grad-hero);pointer-events:none}
+    .card .inner{position:relative;padding:22px}
+    .claim-card{margin-top:26px}
+    .ctitle{font-size:17px;font-weight:700}
+    .cdesc{font-size:13px;color:var(--text-2);margin-top:4px;margin-bottom:18px}
 
-            --success:#1AB280;
-            --success-bg:#DFFBEE;
-            --danger:#B61616;
-            --danger-bg:#FDE4E9;
-            --warning:#C75E05;
+    label{display:block;font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+    .field{display:flex;align-items:center;gap:8px;background:var(--bg-surface);border:1px solid var(--border);
+      border-radius:var(--radius);padding:5px 5px 5px 12px;transition:border-color .15s,box-shadow .15s}
+    .field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+    .field.valid{border-color:var(--accent)}
+    .field img.ava{width:22px;height:22px;border-radius:6px;flex:none}
+    .field input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:13px;padding:8px 0}
+    .field input::placeholder{color:var(--text-3)}
+    .minibtn{flex:none;height:30px;padding:0 11px;border-radius:7px;background:var(--bg-card);border:1px solid var(--border);
+      color:var(--text-2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s var(--ease)}
+    .minibtn:hover{border-color:var(--accent);color:var(--accent)}
+    .minibtn.ok{border-color:var(--up);color:var(--up)}
 
-            --shadow-sm:0px 2px 4px 0px rgba(0,0,0,0.05);
-            --shadow-md:0px 4px 12px rgba(0,0,0,0.08);
-            --font:'Sora',sans-serif;
-            --mono:'JetBrains Mono','Fira Code',monospace;
-            --radius:12px;
-            --radius-sm:8px;
-            --transition:200ms ease;
-        }
+    .btn{width:100%;height:48px;margin-top:16px;border:none;border-radius:var(--radius);cursor:pointer;
+      font-family:var(--font);font-size:15px;font-weight:700;color:var(--text-inverse);background:var(--grad-accent);
+      display:flex;align-items:center;justify-content:center;gap:9px;transition:filter .15s,transform .1s,opacity .15s}
+    .btn:hover{filter:brightness(1.08)}
+    .btn:active{transform:translateY(1px)}
+    .btn:disabled{opacity:.5;cursor:not-allowed;filter:none}
+    .btn.busy{cursor:wait}
+    .spin{width:16px;height:16px;border:2px solid rgba(4,19,10,.35);border-top-color:var(--text-inverse);border-radius:50%;animation:spin .6s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
-        /* Mersennet brand — terminal green on pure black (matches mersennet.com) */
-        .dark-mode{
-            --color-main:#7dff9b;
-            --color-secondary:#7dff9b;
-            --gradient-primary:#7dff9b;
-            --text-primary:#ececef;
-            --text-secondary:#9a9aa6;
-            --color-border:#1c201d;
-            --bg-100:#000000;
-            --bg-200:#101312;
-            --bg-300:#1c201d;
-            --bg-card:#0a0c0b;
-            --success:#34d399;
-            --success-bg:#0e2c13;
-            --danger:#ff8d80;
-            --danger-bg:#3a0f14;
-        }
+    .result{margin-top:14px;padding:12px 14px;border-radius:var(--radius);font-size:13px;display:none;align-items:flex-start;gap:10px;border:1px solid transparent}
+    .result.show{display:flex;animation:rin .35s var(--bounce)}
+    @keyframes rin{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+    .result.ok{background:var(--up-bg);border-color:rgba(26,213,152,.3);color:var(--up)}
+    .result.err{background:var(--down-bg);border-color:rgba(255,82,64,.3);color:var(--down)}
+    .result.wait{background:var(--warn-bg);border-color:rgba(255,178,60,.3);color:var(--warn)}
+    .result .body{flex:1;min-width:0}
+    .result a{color:inherit;text-decoration:underline;text-underline-offset:2px;font-family:var(--mono)}
+    .result .txline{margin-top:6px;font-family:var(--mono);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .copy{cursor:pointer;opacity:.7}.copy:hover{opacity:1}
 
-        html{scroll-behavior:smooth;font-size:16px}
-        body.dark-mode::before{
-            content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-            background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),
-                             linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
-            background-size:48px 48px;
-        }
-        body.dark-mode::after{
-            content:'';position:fixed;z-index:0;pointer-events:none;
-            width:560px;height:560px;left:50%;top:8%;transform:translateX(-50%);
-            border-radius:50%;filter:blur(110px);background:rgba(125,255,155,0.10);
-        }
-        .header,.container,footer{position:relative;z-index:1}
-        body{
-            font-family:var(--font);font-weight:300;background:var(--bg-100);
-            color:var(--text-primary);min-height:100vh;display:flex;flex-direction:column;
-            align-items:center;-webkit-font-smoothing:antialiased;
-            transition:background .3s,color .3s;
-        }
-        ::selection{background:var(--bg-200);color:var(--text-primary)}
-        :focus-visible{outline:2px solid var(--color-accent);outline-offset:2px;border-radius:4px}
-        a{color:var(--color-secondary);text-decoration:none;transition:opacity var(--transition)}
-        a:hover{opacity:.8}
-        .dark-mode a{color:var(--color-accent)}
+    /* stat chips */
+    .chips{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+    .chip{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius);padding:12px 13px;text-align:left}
+    .chip .l{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+    .chip .v{font-size:15px;font-weight:700;font-family:var(--mono);margin-top:5px}
+    .chip .v.a{color:var(--accent)}
+    @media(max-width:520px){.chips{grid-template-columns:repeat(2,1fr)}}
 
-        /* Header */
-        .header{
-            width:100%;position:sticky;top:0;z-index:10;
-            background:var(--bg-card);box-shadow:var(--shadow-sm);
-            transition:background .3s;
-        }
-        .header-inner{
-            max-width:600px;margin:0 auto;padding:0 1.5rem;
-            height:64px;display:flex;align-items:center;justify-content:space-between;
-        }
-        .header-left{display:flex;align-items:center;gap:.75rem}
-        .header-left svg{width:32px;height:32px;flex-shrink:0}
-        .header-title{font-size:18px;font-weight:700;letter-spacing:-0.02em}
+    /* tokens */
+    .sec-h{font-size:13px;font-weight:600;color:var(--text-2);margin:26px 0 12px;display:flex;align-items:center;gap:8px}
+    .toks{display:grid;gap:10px}
+    .tok{display:flex;align-items:center;gap:12px;padding:13px 15px;background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius);transition:border-color .15s}
+    .tok:hover{border-color:var(--border)}
+    .tok .glyph{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none;font-family:var(--mono)}
+    .tok .meta{flex:1;min-width:0}
+    .tok .nm{font-weight:600;font-size:14px}
+    .tok .ad{font-size:11px;color:var(--text-3);font-family:var(--mono)}
+    .tok .amt{font-family:var(--mono);font-size:13px;color:var(--text-2);text-align:right;flex:none}
+    .tok .claim{flex:none;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg-elev);
+      color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s var(--ease)}
+    .tok .claim:hover{border-color:var(--accent);color:var(--accent)}
+    .tok .claim:disabled{opacity:.5;cursor:wait}
 
-        .header-actions{display:flex;align-items:center;gap:.5rem}
-        .theme-toggle{
-            width:36px;height:36px;border-radius:8px;border:1px solid var(--color-border);
-            background:transparent;cursor:pointer;display:flex;align-items:center;
-            justify-content:center;transition:all var(--transition);color:var(--text-secondary);
-        }
-        .theme-toggle:hover{border-color:var(--color-main);color:var(--color-main)}
-        .theme-toggle svg{width:18px;height:18px}
+    /* network row */
+    .net{margin-top:14px}
+    .kv{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:1px solid var(--border-soft);font-size:13px}
+    .kv:last-child{border-bottom:none}
+    .kv .k{color:var(--text-2);display:flex;align-items:center;gap:8px}
+    .kv .v{font-family:var(--mono);color:var(--text)}
+    .kv .v.a{color:var(--accent)}
 
-        .chain-pill{
-            display:inline-flex;align-items:center;gap:.4rem;
-            padding:.3rem .75rem;border-radius:100px;font-size:11px;font-weight:600;
-            font-family:var(--mono);background:var(--bg-200);color:var(--color-secondary);
-            border:1px solid var(--color-border);transition:all .3s;
-        }
-        .dark-mode .chain-pill{color:var(--color-accent)}
-        .chain-dot{width:6px;height:6px;border-radius:50%;background:var(--success);
-            box-shadow:0 0 6px var(--success);animation:pulse 2s infinite}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-
-        /* Container */
-        .container{
-            width:100%;max-width:520px;padding:0 1.5rem;margin:0 auto;
-            display:flex;flex-direction:column;align-items:center;flex:1;
-        }
-
-        /* Hero */
-        .hero{margin-top:2.5rem;text-align:center}
-        .hero h2{
-            font-size:24px;font-weight:700;margin-bottom:.5rem;
-        }
-        .hero .gradient-title{
-            background:linear-gradient(82.84deg,var(--text-primary) 51.47%,#0fae62 99.63%);
-            background-clip:text;-webkit-text-fill-color:transparent;
-        }
-        .dark-mode .hero .gradient-title{
-            background:linear-gradient(82.84deg,#fff 51.47%,#7dff9b 99.63%);
-            background-clip:text;-webkit-text-fill-color:transparent;
-        }
-        .hero p{color:var(--text-secondary);font-size:14px;line-height:1.6;margin-top:.25rem}
-
-        /* Card */
-        .card{
-            margin-top:2rem;width:100%;padding:1.75rem;
-            background:var(--bg-card);border:1px solid var(--color-border);
-            border-radius:var(--radius);box-shadow:var(--shadow-sm);
-            transition:all .3s;
-        }
-        .card-title{font-size:16px;font-weight:600;margin-bottom:.2rem}
-        .card-desc{font-size:13px;color:var(--text-secondary);margin-bottom:1.25rem;line-height:1.6}
-
-        /* Form */
-        label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:.4rem}
-
-        .input-wrap{
-            display:flex;align-items:center;gap:.5rem;
-            background:var(--bg-100);border:1px solid var(--color-border);
-            border-radius:var(--radius-sm);padding:.15rem .15rem .15rem .75rem;
-            transition:border-color var(--transition);
-        }
-        .input-wrap:focus-within{border-color:var(--color-secondary)}
-        .input-wrap input{
-            flex:1;background:none;border:none;outline:none;color:var(--text-primary);
-            font-family:var(--mono);font-size:13px;padding:.6rem 0;
-        }
-        .input-wrap input::placeholder{color:var(--text-secondary);opacity:.6}
-
-        .wallet-btn{
-            flex-shrink:0;padding:.5rem .7rem;border-radius:var(--radius-sm);
-            background:var(--bg-card);border:1px solid var(--color-border);
-            color:var(--text-secondary);font-size:12px;font-weight:600;
-            cursor:pointer;transition:all var(--transition);font-family:var(--font);
-        }
-        .wallet-btn:hover{border-color:var(--color-main);color:var(--color-main)}
-
-        /* Primary button */
-        .submit-btn{
-            margin-top:1rem;width:100%;padding:.7rem;border:none;cursor:pointer;
-            border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;
-            font-weight:600;color:var(--text-white);position:relative;overflow:hidden;
-            background:var(--gradient-primary);transition:all var(--transition);
-        }
-        .submit-btn div{
-            background:var(--color-main);border:solid 1px var(--color-main);
-            padding:.65rem;border-radius:calc(var(--radius-sm) - 2px);
-            transition:all .3s;color:white;font-weight:600;font-size:14px;
-            font-family:var(--font);
-        }
-        .dark-mode .submit-btn div{color:#04130a}
-        .submit-btn:hover div{background:transparent}
-        .submit-btn:disabled{opacity:.4;cursor:wait}
-        .submit-btn:disabled div{background:var(--color-main)}
-
-        .spinner{display:none;width:14px;height:14px;border:2px solid transparent;
-            border-top-color:currentColor;border-radius:50%;animation:spin .6s linear infinite;
-            margin-right:.4rem;vertical-align:middle}
-        @keyframes spin{to{transform:rotate(360deg)}}
-
-        /* Result */
-        .result{
-            margin-top:1rem;padding:.7rem 1rem;border-radius:var(--radius-sm);
-            font-family:var(--mono);font-size:12px;line-height:1.6;display:none;
-            word-break:break-all;
-        }
-        .result.show{display:block}
-        .result.success{background:var(--success-bg);color:var(--success);border:1px solid var(--success)}
-        .result.error{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger)}
-        .result a{color:inherit;text-decoration:underline;text-underline-offset:2px}
-
-        /* Info grid */
-        .info-section{
-            margin-top:1.25rem;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:.6rem;
-        }
-        .info-card{
-            padding:.85rem 1rem;background:var(--bg-card);border:1px solid var(--color-border);
-            border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);transition:all .3s;
-        }
-        .info-label{font-size:11px;font-weight:600;color:var(--text-secondary);
-            text-transform:uppercase;letter-spacing:.04em;margin-bottom:.2rem}
-        .info-value{font-size:14px;font-weight:600;font-family:var(--mono)}
-        .info-value.accent{color:var(--color-secondary)}
-        .dark-mode .info-value.accent{color:var(--color-accent)}
-
-        /* Tokens */
-        .tokens-section{
-            margin-top:1.25rem;width:100%;padding:1.25rem;
-            background:var(--bg-card);border:1px solid var(--color-border);
-            border-radius:var(--radius);box-shadow:var(--shadow-sm);transition:all .3s;
-        }
-        .tokens-title{font-size:14px;font-weight:600;margin-bottom:.6rem}
-        .token-row{
-            display:flex;align-items:center;justify-content:space-between;
-            padding:.45rem 0;border-bottom:1px solid var(--color-border);
-        }
-        .token-row:last-child{border-bottom:none}
-        .token-name{font-weight:600;font-size:13px}
-        .token-hint{font-size:11px;color:var(--text-secondary);font-family:var(--mono)}
-        .token-badge{
-            font-size:11px;padding:.25rem .55rem;border-radius:100px;
-            background:var(--bg-200);color:var(--color-secondary);
-            border:1px solid var(--color-border);font-weight:600;font-family:var(--mono);
-        }
-        .dark-mode .token-badge{color:var(--color-accent)}
-
-        /* Links */
-        .links{
-            margin-top:1.5rem;margin-bottom:1.5rem;display:flex;flex-wrap:wrap;
-            justify-content:center;gap:.75rem;font-size:12px;
-        }
-        .links a{color:var(--text-secondary);font-weight:500;transition:color var(--transition)}
-        .links a:hover{color:var(--color-secondary);opacity:1}
-        .dark-mode .links a:hover{color:var(--color-accent)}
-        .links .sep{opacity:.3;color:var(--text-secondary)}
-
-        /* Footer */
-        footer{
-            padding:1.25rem;text-align:center;font-size:11px;color:var(--text-secondary);
-            border-top:1px solid var(--color-border);width:100%;transition:all .3s;
-        }
-
-        @media(max-width:540px){
-            .info-section{grid-template-columns:1fr}
-            .card{padding:1.25rem}
-            .hero h2{font-size:20px}
-        }
-    </style>
+    .links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 16px;margin:26px 0 8px;font-size:13px}
+    .links a{color:var(--text-2);font-weight:500}
+    .links a:hover{color:var(--accent);text-decoration:none}
+    footer{text-align:center;font-size:11px;color:var(--text-3);padding:22px 0 8px}
+    .banner{display:flex;gap:9px;align-items:center;padding:11px 14px;border-radius:var(--radius);font-size:13px;margin-top:14px;
+      background:var(--teal-bg);border:1px solid rgba(64,224,180,.28);color:var(--teal)}
+    svg.i{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+    /* coin-rain canvas */
+    #fx{position:fixed;inset:0;z-index:50;pointer-events:none}
+    #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-elev);color:var(--text);
+      border:1px solid var(--accent);padding:9px 16px;border-radius:var(--pill);font-size:13px;z-index:60;opacity:0;transition:opacity .2s;box-shadow:var(--shadow)}
+  </style>
 </head>
 <body>
+  <canvas id="fx"></canvas>
+  <header>
+    <div class="hbar">
+      <span class="brand">
+        <svg viewBox="0 0 96 96"><g fill="#7dff9b"><rect x="8" y="14" width="12" height="68" rx="6"/><rect x="25" y="52" width="12" height="30" rx="6"/><rect x="42" y="36" width="12" height="46" rx="6"/><rect x="59" y="52" width="12" height="30" rx="6"/><rect x="76" y="14" width="12" height="68" rx="6"/></g></svg>
+        Mersennet
+      </span>
+      <span class="grow"></span>
+      <span class="pill" id="walletPill" style="display:none"></span>
+      <span class="pill"><span class="dot"></span>Testnet · 131071</span>
+      <button class="iconbtn" id="themeBtn" title="Theme"></button>
+    </div>
+  </header>
 
-    <header class="header">
-        <div class="header-inner">
-            <div class="header-left">
-                <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-                    <g fill="#7dff9b"><rect x="8" y="14" width="12" height="68" rx="6"/><rect x="25" y="14" width="12" height="30" rx="6"/><rect x="42" y="14" width="12" height="46" rx="6"/><rect x="59" y="14" width="12" height="30" rx="6"/><rect x="76" y="14" width="12" height="68" rx="6"/></g>
-                </svg>
-                <span class="header-title">Mersennet Faucet</span>
-            </div>
-            <div class="header-actions">
-                <div class="chain-pill"><span class="chain-dot"></span>Testnet</div>
-                <button class="theme-toggle" id="themeBtn" title="Toggle theme">
-                    <svg id="sunIcon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M11 1V3M11 19V21M3 11H1M5.31 5.31L3.9 3.9M16.69 5.31L18.1 3.9M5.31 16.69L3.9 18.1M16.69 16.69L18.1 18.1M21 11H19M16 11C16 13.76 13.76 16 11 16S6 13.76 6 11 8.24 6 11 6s5 2.24 5 5Z"/>
-                    </svg>
-                    <svg id="moonIcon" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <div class="container">
-        <div class="hero">
-            <h2 class="gradient-title">Mersennet Faucet</h2>
-            <p>Get testnet MRSN tokens for development and testing on Mersennet.</p>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Request MRSN</div>
-            <div class="card-desc">Enter your wallet address to receive 1,000 testnet MRSN. Rate limited to 1 request per address per hour.</div>
-
-            <form id="faucet-form" autocomplete="off">
-                <label for="address">Wallet Address</label>
-                <div class="input-wrap">
-                    <input type="text" id="address" name="address" placeholder="0x..." required pattern="^0x[a-fA-F0-9]{40}$" spellcheck="false">
-                    <button type="button" class="wallet-btn" id="connect-btn" title="Connect MetaMask">Connect</button>
-                    <button type="button" class="wallet-btn" id="paste-btn" title="Paste from clipboard">Paste</button>
-                </div>
-                <button type="submit" class="submit-btn" id="submit-btn">
-                    <div>
-                        <span class="spinner" id="spinner"></span>
-                        <span id="btn-text">Request 1,000 MRSN</span>
-                    </div>
-                </button>
-            </form>
-
-            <div class="result" id="result"></div>
-        </div>
-
-        <div class="info-section">
-            <div class="info-card">
-                <div class="info-label">Amount</div>
-                <div class="info-value accent">1,000 MRSN</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">Rate Limit</div>
-                <div class="info-value">1 req / hour</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">Chain ID</div>
-                <div class="info-value accent">131071</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">Currency</div>
-                <div class="info-value">MRSN</div>
-            </div>
-        </div>
-
-        <div class="tokens-section">
-            <div class="tokens-title">Need test tokens?</div>
-            <div class="token-row">
-                <div>
-                    <div class="token-name">MockUSDC</div>
-                    <div class="token-hint">0xb22f...238d</div>
-                </div>
-                <span class="token-badge">faucet()</span>
-            </div>
-            <div class="token-row">
-                <div>
-                    <div class="token-name">MockUSDT</div>
-                    <div class="token-hint">0x877f...5c17</div>
-                </div>
-                <span class="token-badge">faucet()</span>
-            </div>
-            <div class="token-row">
-                <div>
-                    <div class="token-name">MockDAI</div>
-                    <div class="token-hint">0xb88d...5cf4</div>
-                </div>
-                <span class="token-badge">faucet()</span>
-            </div>
-            <p style="margin-top:.6rem;font-size:12px;color:var(--text-secondary);line-height:1.5">
-                Mock stablecoins have a public <code style="font-family:var(--mono);background:var(--bg-200);padding:2px 6px;border-radius:4px;font-size:11px;transition:all .3s">faucet()</code> function. Call it from any wallet or contract to receive free test tokens.
-            </p>
-        </div>
-
-        <div class="links">
-            <a href="https://explorer.mersennet.com" target="_blank">Explorer</a>
-            <span class="sep">·</span>
-            <a href="https://docs.mersennet.com" target="_blank">Docs</a>
-            <span class="sep">·</span>
-            <a href="https://trade.mersennet.com" target="_blank">Trade</a>
-            <span class="sep">·</span>
-            <a href="https://github.com/mersennet/mersennet" target="_blank">GitHub</a>
-        </div>
+  <div class="wrap">
+    <div class="hero">
+      <svg class="logo" viewBox="0 0 96 96"><g fill="#7dff9b"><rect x="8" y="14" width="12" height="68" rx="6"/><rect x="25" y="52" width="12" height="30" rx="6"/><rect x="42" y="36" width="12" height="46" rx="6"/><rect x="59" y="52" width="12" height="30" rx="6"/><rect x="76" y="14" width="12" height="68" rx="6"/></g></svg>
+      <h1>Fuel the <span class="g">private, verifiable</span> testnet</h1>
+      <p>Claim free testnet MRSN and mock stablecoins to start building on Mersennet.</p>
     </div>
 
-    <footer>
-        &copy; 2026 Mersennet &middot; Mersennet Testnet
-    </footer>
+    <div class="card glow claim-card">
+      <div class="grad"></div>
+      <div class="inner">
+        <div class="ctitle">Claim 1,000 MRSN</div>
+        <div class="cdesc">Native gas + collateral token. One claim per address each hour.</div>
+        <form id="form" autocomplete="off">
+          <label for="addr">Your wallet address</label>
+          <div class="field" id="field">
+            <img class="ava" id="ava" alt="" style="display:none" />
+            <input id="addr" placeholder="0x…" spellcheck="false" inputmode="text" />
+            <button type="button" class="minibtn" id="connectBtn">Connect</button>
+            <button type="button" class="minibtn" id="pasteBtn">Paste</button>
+          </div>
+          <button type="submit" class="btn" id="submit"><span id="submitText">Claim 1,000 MRSN</span></button>
+        </form>
+        <div class="result" id="result"></div>
+      </div>
+    </div>
 
-    <script>
-    const form = document.getElementById('faucet-form');
-    const addrInput = document.getElementById('address');
-    const resultEl = document.getElementById('result');
-    const submitBtn = document.getElementById('submit-btn');
-    const spinner = document.getElementById('spinner');
-    const btnText = document.getElementById('btn-text');
-    const pasteBtn = document.getElementById('paste-btn');
-    const connectBtn = document.getElementById('connect-btn');
-    const themeBtn = document.getElementById('themeBtn');
-    const sunIcon = document.getElementById('sunIcon');
-    const moonIcon = document.getElementById('moonIcon');
+    <div class="chips">
+      <div class="chip"><div class="l">Amount</div><div class="v a">1,000 MRSN</div></div>
+      <div class="chip"><div class="l">Cooldown</div><div class="v">1 hour</div></div>
+      <div class="chip"><div class="l">Your balance</div><div class="v" id="balChip">—</div></div>
+      <div class="chip"><div class="l">Currency</div><div class="v">MRSN · 18</div></div>
+    </div>
 
-    let isDark = (localStorage.getItem('mersennet-faucet-theme') || 'dark') === 'dark';
+    <div class="sec-h"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5h4.5a2 2 0 0 1 0 4H9"/></svg> Mock stablecoins — 10,000 each</div>
+    <div class="toks" id="toks"></div>
+
+    <div class="sec-h"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M12 7.5 6 16.5M12 7.5l6 9"/></svg> Network</div>
+    <div class="card net">
+      <div class="inner" style="padding:0">
+        <div class="kv"><span class="k">Network</span><span class="v">Mersennet Testnet</span></div>
+        <div class="kv"><span class="k">Chain ID</span><span class="v a">131071 · 0x1ffff</span></div>
+        <div class="kv"><span class="k">RPC</span><span class="v">rpc.mersennet.com <span class="copy" data-copy="https://rpc.mersennet.com">⧉</span></span></div>
+        <div class="kv"><span class="k">Explorer</span><span class="v"><a href="https://explorer.mersennet.com" target="_blank">explorer.mersennet.com</a></span></div>
+        <div class="kv"><span class="k" style="padding:4px 0"></span><button class="minibtn" id="addNet" style="height:32px">＋ Add Mersennet to wallet</button></div>
+      </div>
+    </div>
+
+    <div class="banner"><svg class="i" viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-4Z"/><path d="M9 12.5l2 2 4-4.5"/></svg>
+      Testnet only — MRSN here has no value. Collateral on the CLOB is backed 1:1 by escrowed native MRSN.</div>
+
+    <div class="links">
+      <a href="https://explorer.mersennet.com" target="_blank">Explorer</a>
+      <a href="https://trade.mersennet.com" target="_blank">Trade</a>
+      <a href="https://docs.mersennet.com" target="_blank">Docs</a>
+      <a href="https://github.com/mersennet" target="_blank">GitHub</a>
+    </div>
+    <footer>© 2026 Mersennet · the private, verifiable network</footer>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    "use strict";
+    const RPC = 'https://rpc.mersennet.com';
+    const EXPLORER = 'https://explorer.mersennet.com';
+    const CHAIN_HEX = '0x1ffff';
+    const TOKENS = [
+      { key: 'usdc', name: 'MockUSDC', addr: '0xb22f77d89122e9e3784bfd3eee9616273f38238d', dec: 6, color: '#5b8cff' },
+      { key: 'usdt', name: 'MockUSDT', addr: '0x877feca38919acd7aaf7cb81f100e0454aa95c17', dec: 6, color: '#1ad598' },
+      { key: 'dai',  name: 'MockDAI',  addr: '0xb88d63a65691effbf4b6808325b1588912c15cf4', dec: 18, color: '#ffb23c' },
+    ];
+    const $ = (id) => document.getElementById(id);
+    const ADDR_RE = /^0x[0-9a-fA-F]{40}$/;
+    const short = (s, a=8, b=6) => !s ? '' : (s.length <= a+b+2 ? s : s.slice(0,a)+'…'+s.slice(-b));
+
+    // ---------- theme ----------
+    const sun = '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/></svg>';
+    const moon = '<svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8Z"/></svg>';
+    let dark = (localStorage.getItem('mersennet-faucet-theme') || 'dark') !== 'light';
+    function applyTheme(){ document.documentElement.classList.toggle('light', !dark); $('themeBtn').innerHTML = dark ? moon : sun; }
+    $('themeBtn').onclick = () => { dark = !dark; localStorage.setItem('mersennet-faucet-theme', dark ? 'dark':'light'); applyTheme(); };
     applyTheme();
 
-    themeBtn.addEventListener('click', () => {
-        isDark = !isDark;
-        localStorage.setItem('mersennet-faucet-theme', isDark ? 'dark' : 'light');
-        applyTheme();
-    });
+    // ---------- toast + copy ----------
+    function toast(m){ const t=$('toast'); t.textContent=m; t.style.opacity='1'; clearTimeout(t._h); t._h=setTimeout(()=>t.style.opacity='0',1500); }
+    document.addEventListener('click', (e)=>{ const c=e.target.closest('[data-copy]'); if(c){ navigator.clipboard?.writeText(c.dataset.copy); toast('Copied'); } });
 
-    function applyTheme() {
-        document.body.classList.toggle('dark-mode', isDark);
-        sunIcon.style.display = isDark ? 'none' : 'block';
-        moonIcon.style.display = isDark ? 'block' : 'none';
+    // ---------- identicon ----------
+    function identicon(addr){
+      const a=(addr||'0x0').toLowerCase().replace('0x','');
+      let h=0; for(let i=0;i<a.length;i++) h=(h*31+a.charCodeAt(i))>>>0;
+      const fg=`hsl(${120+(h%80)-30} 70% 60%)`; let cells='';
+      for(let y=0;y<5;y++)for(let x=0;x<3;x++){ if((h>>(y*3+x))&1){ cells+=`<rect x='${x}' y='${y}' width='1' height='1'/>`; if(x<2) cells+=`<rect x='${4-x}' y='${y}' width='1' height='1'/>`; } }
+      const svg=`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 5'><rect width='5' height='5' fill='#0a0d0b'/><g fill='${fg}'>${cells}</g></svg>`;
+      return 'data:image/svg+xml,'+encodeURIComponent(svg);
     }
 
-    connectBtn.addEventListener('click', async () => {
-        if (typeof window.ethereum !== 'undefined') {
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                if (accounts && accounts[0]) {
-                    addrInput.value = accounts[0];
-                    addrInput.focus();
-                    connectBtn.textContent = '✓ Connected';
-                    connectBtn.style.borderColor = 'var(--success)';
-                    connectBtn.style.color = 'var(--success)';
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_addEthereumChain',
-                            params: [{
-                                chainId: '0x1FFFF',
-                                chainName: 'Mersennet Testnet',
-                                nativeCurrency: { name: 'MRSN', symbol: 'MRSN', decimals: 18 },
-                                rpcUrls: ['https://rpc.mersennet.com'],
-                                blockExplorerUrls: ['https://explorer.mersennet.com']
-                            }]
-                        });
-                    } catch {}
-                }
-            } catch (err) {
-                showResult('error', 'Wallet connection denied');
-            }
+    // ---------- RPC ----------
+    async function rpc(method, params=[]){
+      const r = await fetch(RPC, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({jsonrpc:'2.0',id:1,method,params}) });
+      const j = await r.json(); if (j.error) throw new Error(j.error.message); return j.result;
+    }
+    function fmtUnits(hex, dec, dp=2){
+      let v; try{ v=BigInt(hex); }catch{ return '0'; }
+      const base=10n**BigInt(dec); const whole=v/base; const frac=v%base;
+      const fs=frac.toString().padStart(dec,'0').slice(0,dp).replace(/0+$/,'');
+      return Number(whole).toLocaleString('en-US')+(fs?'.'+fs:'');
+    }
+    async function refreshBalance(addr){
+      if(!ADDR_RE.test(addr)){ $('balChip').textContent='—'; return; }
+      try{ const bal=await rpc('eth_getBalance',[addr,'latest']); $('balChip').textContent=fmtUnits(bal,18,2); $('balChip').classList.add('a'); }
+      catch{ $('balChip').textContent='—'; }
+    }
+
+    // ---------- address field ----------
+    const addr=$('addr'), field=$('field'), ava=$('ava');
+    let curAddr='';
+    function setAddr(v){ addr.value=v; onAddr(); }
+    function onAddr(){
+      const v=addr.value.trim(); const ok=ADDR_RE.test(v);
+      field.classList.toggle('valid', ok);
+      if(ok){ ava.src=identicon(v); ava.style.display='block'; if(v.toLowerCase()!==curAddr){ curAddr=v.toLowerCase(); refreshBalance(v); renderCooldown(); } }
+      else { ava.style.display='none'; curAddr=''; $('balChip').textContent='—'; }
+    }
+    addr.addEventListener('input', onAddr);
+
+    $('pasteBtn').onclick = async () => { try{ const t=await navigator.clipboard.readText(); if(t) setAddr(t.trim()); }catch{ addr.focus(); } };
+    $('connectBtn').onclick = async () => {
+      if(!window.ethereum){ toast('No wallet found'); return; }
+      try{
+        const acc = await window.ethereum.request({ method:'eth_requestAccounts' });
+        if(acc && acc[0]){ setAddr(acc[0]); const b=$('connectBtn'); b.textContent='✓ Connected'; b.classList.add('ok'); showWallet(acc[0]); addNetwork(true); }
+      }catch{ toast('Connection cancelled'); }
+    };
+    function showWallet(a){ const p=$('walletPill'); p.style.display='inline-flex'; p.innerHTML=`<span class="dot"></span>${short(a,6,4)}`; }
+    async function addNetwork(silent){
+      if(!window.ethereum){ if(!silent) toast('No wallet found'); return; }
+      try{ await window.ethereum.request({ method:'wallet_addEthereumChain', params:[{ chainId:CHAIN_HEX, chainName:'Mersennet Testnet', nativeCurrency:{name:'MRSN',symbol:'MRSN',decimals:18}, rpcUrls:[RPC], blockExplorerUrls:[EXPLORER] }] }); if(!silent) toast('Mersennet added'); }
+      catch{ if(!silent) toast('Cancelled'); }
+    }
+    $('addNet').onclick = () => addNetwork(false);
+
+    // ---------- cooldown (client-side hint; backend is the source of truth) ----------
+    function cdKey(a){ return 'mersennet-faucet-cd:'+a.toLowerCase(); }
+    let cdTimer=null;
+    function startCooldown(a){ localStorage.setItem(cdKey(a), String(Date.now()+3600*1000)); renderCooldown(); }
+    function renderCooldown(){
+      clearInterval(cdTimer);
+      const a=addr.value.trim(); const submit=$('submit'), st=$('submitText');
+      if(!ADDR_RE.test(a)){ submit.disabled=false; st.textContent='Claim 1,000 MRSN'; return; }
+      const until=parseInt(localStorage.getItem(cdKey(a))||'0',10);
+      const tick=()=>{
+        const left=until-Date.now();
+        if(left<=0){ submit.disabled=false; st.textContent='Claim 1,000 MRSN'; clearInterval(cdTimer); return; }
+        submit.disabled=true; const m=Math.floor(left/60000), s=Math.floor((left%60000)/1000);
+        st.textContent=`Next claim in ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      };
+      tick(); cdTimer=setInterval(tick,1000);
+    }
+
+    // ---------- claim MRSN ----------
+    function result(type, html){ const r=$('result'); r.className='result show '+type; r.innerHTML=html; }
+    $('form').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const a=addr.value.trim();
+      if(!ADDR_RE.test(a)){ result('err','<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div class="body">Enter a valid address — 0x followed by 40 hex characters.</div>'); return; }
+      const submit=$('submit'), st=$('submitText');
+      submit.disabled=true; submit.classList.add('busy'); const prev=st.textContent; st.innerHTML='<span class="spin"></span> Sending…';
+      try{
+        const r=await fetch('/faucet',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a}) });
+        const d=await r.json();
+        if(d.success){
+          const url=EXPLORER+'/#/tx/'+d.tx_hash;
+          result('ok',`<svg class="i" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg><div class="body"><b>1,000 MRSN on the way.</b><div class="txline">tx <a href="${url}" target="_blank">${short(d.tx_hash,10,8)}</a><span class="copy" data-copy="${d.tx_hash}">⧉</span></div></div>`);
+          coinRain(); startCooldown(a); setTimeout(()=>refreshBalance(a), 1500); setTimeout(()=>refreshBalance(a), 4000);
         } else {
-            showResult('error', 'No wallet detected. Install MetaMask to use this feature.');
+          const msg=d.error||'Request failed. Try again later.';
+          if(/rate limit/i.test(msg)){ result('wait',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="body">${msg}</div>`); startCooldown(a); }
+          else result('err',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div class="body">${msg}</div>`);
         }
+      }catch(err){ result('err',`<svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg><div class="body">Network error: ${err.message}</div>`); }
+      finally{ submit.classList.remove('busy'); st.textContent=prev; renderCooldown(); }
     });
 
-    pasteBtn.addEventListener('click', async () => {
-        try {
-            const text = await navigator.clipboard.readText();
-            if (text) {
-                addrInput.value = text.trim();
-                addrInput.focus();
-            }
-        } catch { addrInput.focus(); }
-    });
+    // ---------- token claims ----------
+    function renderTokens(){
+      $('toks').innerHTML = TOKENS.map(t=>`
+        <div class="tok" data-k="${t.key}">
+          <div class="glyph" style="background:${t.color}22;color:${t.color}">${t.name.replace('Mock','')[0]}${t.name.replace('Mock','')[1]||''}</div>
+          <div class="meta"><div class="nm">${t.name}</div><div class="ad">${short(t.addr,6,4)} · ${t.dec} dec</div></div>
+          <div class="amt">10,000</div>
+          <button class="claim" data-k="${t.key}">Claim</button>
+        </div>`).join('');
+      document.querySelectorAll('.tok .claim').forEach(b=>{
+        b.onclick = async () => {
+          const a=addr.value.trim();
+          if(!ADDR_RE.test(a)){ toast('Enter your address first'); addr.focus(); return; }
+          const t=TOKENS.find(x=>x.key===b.dataset.k);
+          b.disabled=true; const pv=b.textContent; b.textContent='…';
+          try{
+            const r=await fetch('/claim-token',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a, token:t.key}) });
+            const d=await r.json();
+            if(d.success){ b.textContent='✓ Sent'; b.style.borderColor='var(--up)'; b.style.color='var(--up)';
+              toast(`10,000 ${t.name} sent`); watchAsset(t); }
+            else { b.textContent=pv; b.disabled=false; toast(d.error||'Claim failed'); }
+          }catch(err){ b.textContent=pv; b.disabled=false; toast('Network error'); }
+        };
+      });
+    }
+    async function watchAsset(t){
+      if(!window.ethereum) return;
+      try{ await window.ethereum.request({ method:'wallet_watchAsset', params:{ type:'ERC20', options:{ address:t.addr, symbol:t.name.replace('Mock',''), decimals:t.dec } } }); }catch{}
+    }
+    renderTokens();
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const addr = addrInput.value.trim();
-        if (!/^0x[a-fA-F0-9]{40}$/.test(addr)) {
-            showResult('error', 'Invalid address. Must be 0x followed by 40 hex characters.');
-            return;
-        }
-
-        setLoading(true);
-        try {
-            // Same-origin /faucet path — Caddy on faucet.mersennet.com proxies
-            // this to the faucet backend on the testnet host.
-            const r = await fetch('/faucet', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ address: addr })
-            });
-            const data = await r.json();
-            if (data.success) {
-                const txUrl = 'https://explorer.mersennet.com/#/tx/' + data.tx_hash;
-                showResult('success',
-                    'Sent 1,000 MRSN successfully!<br>' +
-                    'Tx: <a href="' + txUrl + '" target="_blank">' + data.tx_hash.slice(0,18) + '...</a>'
-                );
-            } else {
-                showResult('error', data.error || 'Request failed. Try again later.');
-            }
-        } catch (err) {
-            showResult('error', 'Network error: ' + err.message);
-        } finally {
-            setLoading(false);
-        }
-    });
-
-    function setLoading(on) {
-        submitBtn.disabled = on;
-        spinner.style.display = on ? 'inline-block' : 'none';
-        btnText.textContent = on ? 'Sending...' : 'Request 1,000 MRSN';
+    // ---------- coin rain ----------
+    const cv=$('fx'); const cx=cv.getContext('2d'); let rafId=null, coins=[];
+    function size(){ cv.width=innerWidth; cv.height=innerHeight; }
+    addEventListener('resize', size); size();
+    function coinRain(){
+      const colors=['#7dff9b','#2bd96a','#40e0b4','#1ad598'];
+      coins=[]; for(let i=0;i<70;i++) coins.push({ x:Math.random()*cv.width, y:-20-Math.random()*cv.height*0.5, r:3+Math.random()*5, vy:3+Math.random()*5, vx:(Math.random()-.5)*2, c:colors[i%colors.length], a:1, rot:Math.random()*6 });
+      if(rafId) cancelAnimationFrame(rafId); const t0=performance.now();
+      (function loop(t){
+        cx.clearRect(0,0,cv.width,cv.height); let live=0;
+        for(const k of coins){ k.x+=k.vx; k.y+=k.vy; k.vy+=0.12; k.rot+=0.1; if(t-t0>900) k.a-=0.04;
+          if(k.a>0 && k.y<cv.height+30){ live++; cx.save(); cx.globalAlpha=Math.max(0,k.a); cx.translate(k.x,k.y); cx.rotate(k.rot);
+            cx.fillStyle=k.c; cx.beginPath(); cx.ellipse(0,0,k.r,k.r*0.62,0,0,7); cx.fill(); cx.restore(); } }
+        if(live>0) rafId=requestAnimationFrame(loop); else { cx.clearRect(0,0,cv.width,cv.height); rafId=null; }
+      })(t0);
     }
 
-    function showResult(type, html) {
-        resultEl.className = 'result show ' + type;
-        resultEl.innerHTML = html;
-    }
-    </script>
+    // ---------- prefill from connected wallet ----------
+    (async()=>{ try{ if(window.ethereum){ const acc=await window.ethereum.request({method:'eth_accounts'}); if(acc&&acc[0]){ setAddr(acc[0]); showWallet(acc[0]); } } }catch{} })();
+    window.ethereum?.on?.('accountsChanged', (acc)=>{ if(acc&&acc[0]){ setAddr(acc[0]); showWallet(acc[0]); } });
+  </script>
 </body>
 </html>
