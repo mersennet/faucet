@@ -351,7 +351,7 @@
         const r=await fetch('/faucet',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a}) });
         const d=await r.json();
         if(d.success){
-          const url=EXPLORER+'/#/tx/'+d.tx_hash;
+          const url=EXPLORER+'/tx/'+d.tx_hash;
           result('ok',`<svg class="i" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg><div class="body"><b>1,000 MRSN on the way.</b><div class="txline">tx <a href="${url}" target="_blank">${short(d.tx_hash,10,8)}</a><span class="copy" data-copy="${d.tx_hash}">⧉</span></div></div>`);
           coinRain(); startCooldown(a); setTimeout(()=>refreshBalance(a), 1500); setTimeout(()=>refreshBalance(a), 4000);
         } else {
