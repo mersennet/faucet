@@ -136,7 +136,7 @@
     .tok .glyph{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none;font-family:var(--mono)}
     .tok .meta{flex:1;min-width:0}
     .tok .nm{font-weight:600;font-size:14px}
-    .tok .ad{font-size:11px;color:var(--text-3);font-family:var(--mono)}
+    .tok .ad{font-size:11px;color:var(--text-2);font-family:var(--mono)}
     .tok .amt{font-family:var(--mono);font-size:13px;color:var(--text-2);text-align:right;flex:none}
     .tok .claim{flex:none;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg-elev);
       color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s var(--ease)}
@@ -207,7 +207,7 @@
 
     <div class="chips">
       <div class="chip"><div class="l">Amount</div><div class="v a">1,000 MRSN</div></div>
-      <div class="chip"><div class="l">Cooldown</div><div class="v">1 hour</div></div>
+      <div class="chip"><div class="l">Cooldown</div><div class="v" id="cdChip">1 hour</div></div>
       <div class="chip"><div class="l">Your balance</div><div class="v" id="balChip">—</div></div>
       <div class="chip"><div class="l">Currency</div><div class="v">MRSN · 18</div></div>
     </div>
@@ -219,7 +219,7 @@
     <div class="card net">
       <div class="inner" style="padding:0">
         <div class="kv"><span class="k">Network</span><span class="v">Mersennet Testnet</span></div>
-        <div class="kv"><span class="k">Chain ID</span><span class="v a">131071 · 0x1ffff</span></div>
+        <div class="kv"><span class="k">Chain ID</span><span class="v a">131071 · 0x1ffff <span class="copy" data-copy="131071">⧉</span></span></div>
         <div class="kv"><span class="k">RPC</span><span class="v">rpc.mersennet.com <span class="copy" data-copy="https://rpc.mersennet.com">⧉</span></span></div>
         <div class="kv"><span class="k">Explorer</span><span class="v"><a href="https://explorer.mersennet.com" target="_blank">explorer.mersennet.com</a></span></div>
         <div class="kv"><span class="k" style="padding:4px 0"></span><button class="minibtn" id="addNet" style="height:32px">＋ Add Mersennet to wallet</button></div>
@@ -332,9 +332,11 @@
       const until=parseInt(localStorage.getItem(cdKey(a))||'0',10);
       const tick=()=>{
         const left=until-Date.now();
-        if(left<=0){ submit.disabled=false; st.textContent='Claim 1,000 MRSN'; clearInterval(cdTimer); return; }
+        const chip=$('cdChip');
+        if(left<=0){ submit.disabled=false; st.textContent='Claim 1,000 MRSN'; if(chip) chip.textContent='1 hour'; clearInterval(cdTimer); return; }
         submit.disabled=true; const m=Math.floor(left/60000), s=Math.floor((left%60000)/1000);
-        st.textContent=`Next claim in ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        st.textContent=`Next claim in ${m}m ${String(s).padStart(2,'0')}s`;
+        if(chip) chip.textContent=`${m}m ${String(s).padStart(2,'0')}s left`;
       };
       tick(); cdTimer=setInterval(tick,1000);
     }
@@ -368,7 +370,7 @@
       $('toks').innerHTML = TOKENS.map(t=>`
         <div class="tok" data-k="${t.key}">
           <div class="glyph" style="background:${t.color}22;color:${t.color}">${t.name.replace('Mock','')[0]}${t.name.replace('Mock','')[1]||''}</div>
-          <div class="meta"><div class="nm">${t.name}</div><div class="ad">${short(t.addr,6,4)} · ${t.dec} dec</div></div>
+          <div class="meta"><div class="nm">${t.name}</div><div class="ad" title="${t.addr}">${short(t.addr,6,4)} <span class="copy" data-copy="${t.addr}">⧉</span> · ${t.dec} dec</div></div>
           <div class="amt">10,000</div>
           <button class="claim" data-k="${t.key}">Claim</button>
         </div>`).join('');
