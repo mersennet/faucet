@@ -195,13 +195,13 @@
           <label for="addr">Your wallet address</label>
           <div class="field" id="field">
             <img class="ava" id="ava" alt="" style="display:none" />
-            <input id="addr" placeholder="0x…" spellcheck="false" inputmode="text" />
+            <input id="addr" placeholder="0x…" spellcheck="false" inputmode="text" aria-label="Wallet address" />
             <button type="button" class="minibtn" id="connectBtn">Connect</button>
             <button type="button" class="minibtn" id="pasteBtn">Paste</button>
           </div>
           <button type="submit" class="btn" id="submit"><span id="submitText">Claim 1,000 MRSN</span></button>
         </form>
-        <div class="result" id="result"></div>
+        <div class="result" id="result" role="status" aria-live="polite"></div>
       </div>
     </div>
 
@@ -227,7 +227,7 @@
     </div>
 
     <div class="banner"><svg class="i" viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-4Z"/><path d="M9 12.5l2 2 4-4.5"/></svg>
-      Testnet only — MRSN here has no value. Collateral on the CLOB is backed 1:1 by escrowed native MRSN.</div>
+      Testnet only — MRSN here has no value. The CLOB accepts MRSN and registered tokens (e.g. USDC) as margin collateral, fully escrowed on-chain.</div>
 
     <div class="links">
       <a href="https://explorer.mersennet.com" target="_blank">Explorer</a>
@@ -291,6 +291,21 @@
       if(!ADDR_RE.test(addr)){ $('balChip').textContent='—'; return; }
       try{ const bal=await rpc('eth_getBalance',[addr,'latest']); $('balChip').textContent=fmtUnits(bal,18,2); $('balChip').classList.add('a'); }
       catch{ $('balChip').textContent='—'; }
+      refreshTokenBalances(addr);
+    }
+    // live ERC-20 balances shown next to each token row
+    async function refreshTokenBalances(addr){
+      if(!ADDR_RE.test(addr)) return;
+      const data='0x70a08231'+addr.toLowerCase().replace('0x','').padStart(64,'0'); // balanceOf(address)
+      await Promise.all(TOKENS.map(async (t)=>{
+        const el=document.querySelector(`.tok[data-k="${t.key}"] .amt`);
+        if(!el) return;
+        try{
+          const raw=await rpc('eth_call',[{to:t.addr,data},'latest']);
+          const bal=(raw&&raw!=='0x')?fmtUnits(raw,t.dec,2):'0';
+          el.innerHTML=`<span style="color:var(--text-3)">you have</span> ${bal}`;
+        }catch{}
+      }));
     }
 
     // ---------- address field ----------
@@ -300,8 +315,8 @@
     function onAddr(){
       const v=addr.value.trim(); const ok=ADDR_RE.test(v);
       field.classList.toggle('valid', ok);
-      if(ok){ ava.src=identicon(v); ava.style.display='block'; if(v.toLowerCase()!==curAddr){ curAddr=v.toLowerCase(); refreshBalance(v); renderCooldown(); } }
-      else { ava.style.display='none'; curAddr=''; $('balChip').textContent='—'; }
+      if(ok){ ava.src=identicon(v); ava.style.display='block'; if(v.toLowerCase()!==curAddr){ curAddr=v.toLowerCase(); refreshBalance(v); renderCooldown(); renderTokenCooldowns(); } }
+      else { ava.style.display='none'; curAddr=''; $('balChip').textContent='—'; renderTokenCooldowns(); }
     }
     addr.addEventListener('input', onAddr);
 
@@ -343,10 +358,20 @@
 
     // ---------- claim MRSN ----------
     function result(type, html){ const r=$('result'); r.className='result show '+type; r.innerHTML=html; }
+    // Say exactly what's wrong with a rejected address instead of a generic hint.
+    function addrProblem(a){
+      if(!a) return 'Enter your wallet address — 0x followed by 40 hex characters.';
+      if(!a.startsWith('0x')) return 'Address must start with <b>0x</b>.';
+      const body=a.slice(2);
+      const bad=body.match(/[^0-9a-fA-F]/);
+      if(bad) return `Address contains an invalid character: <b>${bad[0].replace(/</g,'&lt;')}</b>. Only hex (0-9, a-f) is allowed after 0x.`;
+      if(body.length!==40) return `Address has <b>${body.length}</b> hex characters after 0x — it needs exactly <b>40</b>.`;
+      return 'Enter a valid address — 0x followed by 40 hex characters.';
+    }
     $('form').addEventListener('submit', async (e)=>{
       e.preventDefault();
       const a=addr.value.trim();
-      if(!ADDR_RE.test(a)){ result('err','<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div class="body">Enter a valid address — 0x followed by 40 hex characters.</div>'); return; }
+      if(!ADDR_RE.test(a)){ result('err','<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div class="body">'+addrProblem(a)+'</div>'); return; }
       const submit=$('submit'), st=$('submitText');
       submit.disabled=true; submit.classList.add('busy'); const prev=st.textContent; st.innerHTML='<span class="spin"></span> Sending…';
       try{
@@ -365,30 +390,60 @@
       finally{ submit.classList.remove('busy'); st.textContent=prev; renderCooldown(); }
     });
 
-    // ---------- token claims ----------
+    // ---------- token claims (per-token 1h cooldown mirrors the backend) ----------
+    function tokCdKey(a,k){ return 'mersennet-faucet-tokcd:'+k+':'+a.toLowerCase(); }
+    let tokCdTimer=null;
+    function startTokenCooldown(a,k){ localStorage.setItem(tokCdKey(a,k), String(Date.now()+3600*1000)); renderTokenCooldowns(); }
+    function renderTokenCooldowns(){
+      clearInterval(tokCdTimer);
+      const a=addr.value.trim();
+      const tick=()=>{
+        let anyLeft=false;
+        for(const t of TOKENS){
+          const b=document.querySelector(`.tok[data-k="${t.key}"] .claim`);
+          if(!b) continue;
+          const until=ADDR_RE.test(a)?parseInt(localStorage.getItem(tokCdKey(a,t.key))||'0',10):0;
+          const left=until-Date.now();
+          if(left>0){
+            anyLeft=true; b.disabled=true;
+            const m=Math.floor(left/60000), s=Math.floor((left%60000)/1000);
+            b.textContent=`${m}m ${String(s).padStart(2,'0')}s`;
+          } else if(b.dataset.busy!=='1'){ b.disabled=false; b.textContent='Claim'; b.style.borderColor=''; b.style.color=''; }
+        }
+        if(!anyLeft) clearInterval(tokCdTimer);
+      };
+      tick(); tokCdTimer=setInterval(tick,1000);
+    }
     function renderTokens(){
       $('toks').innerHTML = TOKENS.map(t=>`
         <div class="tok" data-k="${t.key}">
           <div class="glyph" style="background:${t.color}22;color:${t.color}">${t.name.replace('Mock','')[0]}${t.name.replace('Mock','')[1]||''}</div>
-          <div class="meta"><div class="nm">${t.name}</div><div class="ad" title="${t.addr}">${short(t.addr,6,4)} <span class="copy" data-copy="${t.addr}">⧉</span> · ${t.dec} dec</div></div>
-          <div class="amt">10,000</div>
-          <button class="claim" data-k="${t.key}">Claim</button>
+          <div class="meta"><div class="nm">${t.name} <span style="color:var(--text-3);font-weight:400;font-size:12px">· 10,000 per claim</span></div><div class="ad" title="${t.addr}">${short(t.addr,6,4)} <span class="copy" data-copy="${t.addr}">⧉</span> · ${t.dec} dec</div></div>
+          <div class="amt"></div>
+          <button class="claim" data-k="${t.key}" aria-label="Claim 10,000 ${t.name}">Claim</button>
         </div>`).join('');
       document.querySelectorAll('.tok .claim').forEach(b=>{
         b.onclick = async () => {
           const a=addr.value.trim();
           if(!ADDR_RE.test(a)){ toast('Enter your address first'); addr.focus(); return; }
           const t=TOKENS.find(x=>x.key===b.dataset.k);
-          b.disabled=true; const pv=b.textContent; b.textContent='…';
+          b.disabled=true; b.dataset.busy='1'; const pv=b.textContent; b.textContent='…';
           try{
             const r=await fetch('/claim-token',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a, token:t.key}) });
             const d=await r.json();
             if(d.success){ b.textContent='✓ Sent'; b.style.borderColor='var(--up)'; b.style.color='var(--up)';
-              toast(`10,000 ${t.name} sent`); watchAsset(t); }
-            else { b.textContent=pv; b.disabled=false; toast(d.error||'Claim failed'); }
-          }catch(err){ b.textContent=pv; b.disabled=false; toast('Network error'); }
+              toast(`10,000 ${t.name} sent`); watchAsset(t); startTokenCooldown(a,t.key);
+              setTimeout(()=>{ b.dataset.busy=''; renderTokenCooldowns(); refreshTokenBalances(a); }, 2500); }
+            else {
+              b.dataset.busy=''; b.textContent=pv; b.disabled=false;
+              const msg=d.error||'Claim failed';
+              toast(msg);
+              if(/rate limit/i.test(msg)){ startTokenCooldown(a,t.key); }
+            }
+          }catch(err){ b.dataset.busy=''; b.textContent=pv; b.disabled=false; toast('Network error'); }
         };
       });
+      renderTokenCooldowns();
     }
     async function watchAsset(t){
       if(!window.ethereum) return;
