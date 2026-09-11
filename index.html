@@ -446,7 +446,7 @@
       $('toks').innerHTML = TOKENS.map(t=>`
         <div class="tok" data-k="${t.key}">
           <div class="glyph" style="background:${t.color}22;color:${t.color}">${t.name.replace('Mock','')[0]}${t.name.replace('Mock','')[1]||''}</div>
-          <div class="meta"><div class="nm">${t.name} <span style="color:var(--text-3);font-weight:400;font-size:12px">· 10,000 per claim</span></div><div class="ad" title="${t.addr}">${short(t.addr,6,4)} <span class="copy" data-copy="${t.addr}">⧉</span> · ${t.dec} dec</div></div>
+          <div class="meta"><div class="nm">${t.name} <span style="color:var(--text-3);font-weight:400;font-size:12px">· 10,000 per claim</span></div><div class="ad" title="${t.addr}">${short(t.addr,6,4)} <span class="copy" data-copy="${t.addr}">⧉</span> · ${t.dec} dec${window.ethereum?` · <span class="copy" data-watch="${t.key}" title="Add ${t.name} to your wallet">+ wallet</span>`:''}</div></div>
           <div class="amt"></div>
           <button class="claim" data-k="${t.key}" aria-label="Claim 10,000 ${t.name}">Claim</button>
         </div>`).join('');
@@ -473,10 +473,22 @@
       });
       renderTokenCooldowns();
     }
-    async function watchAsset(t){
+    // Offer to add the token to the wallet ONCE per token per browser. Wallets
+    // (Rabby, MetaMask) re-prompt on every wallet_watchAsset call even when the
+    // token is already tracked, so the first claim used to nag on every
+    // subsequent claim. Remember both "added" and "declined"; the "+ wallet"
+    // control on each row re-offers it on demand (e.g. after switching wallets).
+    const watchedKey=(t)=>`mersennet-faucet-watched:${t.addr.toLowerCase()}`;
+    async function watchAsset(t, force=false){
       if(!window.ethereum) return;
-      try{ await window.ethereum.request({ method:'wallet_watchAsset', params:{ type:'ERC20', options:{ address:t.addr, symbol:t.name.replace('Mock',''), decimals:t.dec } } }); }catch{}
+      if(!force && localStorage.getItem(watchedKey(t))) return;
+      try{
+        const ok=await window.ethereum.request({ method:'wallet_watchAsset', params:{ type:'ERC20', options:{ address:t.addr, symbol:t.name.replace('Mock',''), decimals:t.dec } } });
+        localStorage.setItem(watchedKey(t), ok===false?'declined':'added');
+        if(force) toast(ok===false?'Not added':`${t.name.replace('Mock','')} added to wallet`);
+      }catch{ localStorage.setItem(watchedKey(t),'declined'); if(force) toast('Wallet dismissed the request'); }
     }
+    document.addEventListener('click', (e)=>{ const w=e.target.closest('[data-watch]'); if(w){ const t=TOKENS.find(x=>x.key===w.dataset.watch); if(t) watchAsset(t, true); } });
     renderTokens();
 
     // ---------- coin rain ----------
