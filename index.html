@@ -511,6 +511,8 @@
     // ---------- prefill from connected wallet ----------
     (async()=>{ try{ if(window.ethereum){ const acc=await window.ethereum.request({method:'eth_accounts'}); if(acc&&acc[0]){ setAddr(acc[0]); showWallet(acc[0]); } } }catch{} })();
     window.ethereum?.on?.('accountsChanged', (acc)=>{ if(acc&&acc[0]){ setAddr(acc[0]); showWallet(acc[0]); } });
+      // Deep link from the trade terminal's getting-started checklist: /?address=0x…
+    try { const q=new URLSearchParams(location.search).get('address'); if(q && ADDR_RE.test(q.trim())) setAddr(q.trim()); } catch(e){}
   </script>
 </body>
 </html>
