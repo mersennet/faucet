@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+
+jobs:
+  check:
+    name: html parses, inline script parses, assets exist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: HTML parses and the inline app script is valid JavaScript
+        run: |
+          python3 - <<'EOF'
+          import html.parser, re, subprocess, sys
+          src = open('index.html', encoding='utf-8').read()
+          class P(html.parser.HTMLParser):
+              def error(self, msg): raise SystemExit(f'html error: {msg}')
+          P().feed(src)
+          scripts = re.findall(r'<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>', src, re.S)
+          assert scripts, 'no inline script found'
+          for i, body in enumerate(scripts):
+              open(f'/tmp/inline{i}.js', 'w').write(body)
+              subprocess.run(['node', '--check', f'/tmp/inline{i}.js'], check=True)
+          print(f'html ok, {len(scripts)} inline script(s) parse')
+          EOF
+      - name: Referenced local assets exist
+        run: |
+          set -e
+          for ref in $(grep -oE '(href|src)="/?(og\.png|favicon[^"]*|assets/[^"]+)"' index.html | sed -E 's/^(href|src)="\/?//; s/"$//' | sort -u); do
+            test -f "$ref" || { echo "missing asset: $ref"; exit 1; }
+          done
+          echo "assets ok"
