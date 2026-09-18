@@ -105,7 +105,7 @@
     .card .inner{position:relative;padding:22px}
     .claim-card{margin-top:26px}
     /* Card title = inverted phosphor block, the signature move of the language. */
-    .ctitle{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;
+    .ctitle{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;
       margin:-22px -22px 0;padding:7px 12px;background:var(--accent-block);color:var(--accent-bright)}
     html.light .ctitle{color:var(--accent)}
     .cdesc{font-size:12px;color:var(--text-2);margin-top:14px;margin-bottom:18px}
@@ -144,7 +144,7 @@
     .result a{color:inherit;text-decoration:underline;text-underline-offset:2px;font-family:var(--mono)}
     .result .txline{margin-top:6px;font-family:var(--mono);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
     .result .next{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
-    .result .next a{display:inline-block;padding:6px 10px;border:1px solid rgba(43,217,106,.45);border-radius:6px;text-decoration:none;font-size:12px;font-weight:600}
+    .result .next a{display:inline-block;padding:6px 10px;border:1px solid rgba(43,217,106,.45);border-radius:var(--radius,0);text-decoration:none;font-size:12px;font-weight:600}
     .result .next a.primary{background:var(--up);color:#02120a;border-color:var(--up)}
     .result .next a:hover{filter:brightness(1.1)}
     .copy{cursor:pointer;opacity:.7}.copy:hover{opacity:1}
@@ -152,7 +152,7 @@
     /* stat chips */
     .chips{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
     .chip{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius);padding:12px 13px;text-align:left}
-    .chip .l{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+    .chip .l{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
     .chip .v{font-size:15px;font-weight:700;font-family:var(--mono);margin-top:5px}
     .chip .v.a{color:var(--accent)}
     @media(max-width:520px){.chips{grid-template-columns:repeat(2,1fr)}}
@@ -163,7 +163,7 @@
     .toks{display:grid;gap:10px}
     .tok{display:flex;align-items:center;gap:12px;padding:13px 15px;background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius);transition:border-color .15s}
     .tok:hover{border-color:var(--border)}
-    .tok .glyph{width:36px;height:36px;border-radius:0;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none;font-family:var(--mono)}
+    .tok .glyph{width:44px;height:36px;border-radius:0;display:grid;place-items:center;font-weight:800;font-size:11px;letter-spacing:.04em;flex:none;font-family:var(--mono)}
     .tok .meta{flex:1;min-width:0}
     .tok .nm{font-weight:600;font-size:14px}
     .tok .ad{font-size:11px;color:var(--text-2);font-family:var(--mono)}
@@ -206,7 +206,7 @@
       <span class="grow"></span>
       <span class="pill" id="walletPill" style="display:none"></span>
       <span class="pill"><span class="dot"></span>Testnet · 131071</span>
-      <button class="iconbtn" id="themeBtn" title="Theme"></button>
+      <button class="iconbtn" id="themeBtn" title="Theme" aria-label="Toggle light / dark theme"></button>
     </div>
   </header>
 
@@ -214,7 +214,7 @@
     <div class="hero">
       <svg class="logo" viewBox="0 0 96 96"><g fill="#2bd96a"><rect x="8" y="14" width="12" height="68" rx="6"/><rect x="25" y="14" width="12" height="30" rx="6"/><rect x="42" y="14" width="12" height="46" rx="6"/><rect x="59" y="14" width="12" height="30" rx="6"/><rect x="76" y="14" width="12" height="68" rx="6"/></g></svg>
       <h1>Fuel the <span class="g">private, verifiable</span> testnet</h1>
-      <p>Claim free testnet MRSN and mock stablecoins to start building on Mersennet.</p>
+      <p>Claim free testnet MRSN — the native gas and collateral token — and mock stablecoins to start trading and building on Mersennet.</p>
     </div>
 
     <div class="card glow claim-card">
@@ -237,7 +237,7 @@
     </div>
 
     <div class="chips">
-      <div class="chip"><div class="l">Amount</div><div class="v a">1,000 MRSN + 1 for gas</div></div>
+      <div class="chip"><div class="l">Amount · incl. 1 for gas</div><div class="v a">1,001 MRSN</div></div>
       <div class="chip"><div class="l">Cooldown</div><div class="v" id="cdChip">1 hour</div></div>
       <div class="chip"><div class="l">Your balance</div><div class="v" id="balChip">—</div></div>
       <div class="chip"><div class="l">Currency</div><div class="v">MRSN · 18</div></div>
@@ -250,8 +250,8 @@
     <div class="card net">
       <div class="inner" style="padding:0">
         <div class="kv"><span class="k">Network</span><span class="v">Mersennet Testnet</span></div>
-        <div class="kv"><span class="k">Chain ID</span><span class="v a">131071 · 0x1ffff <span class="copy" data-copy="131071">⧉</span></span></div>
-        <div class="kv"><span class="k">RPC</span><span class="v">rpc.mersennet.com <span class="copy" data-copy="https://rpc.mersennet.com">⧉</span></span></div>
+        <div class="kv"><span class="k">Chain ID</span><span class="v a">131071 · 0x1ffff <span class="copy" role="button" tabindex="0" aria-label="Copy" data-copy="131071">⧉</span></span></div>
+        <div class="kv"><span class="k">RPC</span><span class="v">rpc.mersennet.com <span class="copy" role="button" tabindex="0" aria-label="Copy" data-copy="https://rpc.mersennet.com">⧉</span></span></div>
         <div class="kv"><span class="k">Explorer</span><span class="v"><a href="https://explorer.mersennet.com" target="_blank">explorer.mersennet.com</a></span></div>
         <div class="kv"><span class="k" style="padding:4px 0"></span><button class="minibtn" id="addNet" style="height:32px">＋ Add Mersennet to wallet</button></div>
       </div>
@@ -372,7 +372,7 @@
     // ---------- cooldown (client-side hint; backend is the source of truth) ----------
     function cdKey(a){ return 'mersennet-faucet-cd:'+a.toLowerCase(); }
     let cdTimer=null;
-    function startCooldown(a){ localStorage.setItem(cdKey(a), String(Date.now()+3600*1000)); renderCooldown(); }
+    function startCooldown(a, retryAfterSec){ localStorage.setItem(cdKey(a), String(Date.now()+((retryAfterSec>0?retryAfterSec:3600)*1000))); renderCooldown(); }
     function renderCooldown(){
       clearInterval(cdTimer);
       const a=addr.value.trim(); const submit=$('submit'), st=$('submitText');
@@ -409,17 +409,19 @@
       submit.disabled=true; submit.classList.add('busy'); const prev=st.textContent; st.innerHTML='<span class="spin"></span> Sending…';
       try{
         const r=await fetch('/faucet',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a}) });
-        const d=await r.json();
+        let d;
+        try{ d=await r.json(); }
+        catch{ d={ error: r.status===502||r.status===503||r.status===504 ? 'The faucet backend is not reachable right now (the chain itself is fine). Try again in a minute; live status at status.mersennet.com.' : `The faucet answered with an unexpected response (HTTP ${r.status}). Try again in a minute.` }; }
         if(d.success){
           const url=EXPLORER+'/tx/'+d.tx_hash;
-          result('ok',`<svg class="i" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg><div class="body"><b>1,000 MRSN on the way.</b><div class="txline">tx <a href="${url}" target="_blank">${short(d.tx_hash,10,8)}</a><span class="copy" data-copy="${d.tx_hash}">⧉</span></div><div class="next"><a class="primary" href="https://trade.mersennet.com/trade" target="_blank" rel="noopener">Place your first trade →</a><a href="https://trade.mersennet.com/vault" target="_blank" rel="noopener">Earn LP points in the maker vault</a><a href="https://docs.mersennet.com/validators/run-a-node/" target="_blank" rel="noopener">Run a node</a></div></div>`);
+          result('ok',`<svg class="i" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg><div class="body"><b>1,001 MRSN on the way.</b><div class="txline">tx <a href="${url}" target="_blank">${short(d.tx_hash,10,8)}</a><span class="copy" role="button" tabindex="0" aria-label="Copy" data-copy="${d.tx_hash}">⧉</span></div><div class="next"><a class="primary" href="https://trade.mersennet.com/trade?deposit=1" target="_blank" rel="noopener">Deposit it and place your first trade →</a><a href="https://trade.mersennet.com/vault" target="_blank" rel="noopener">Earn LP points in the maker vault</a><a href="https://docs.mersennet.com/validators/run-a-node/" target="_blank" rel="noopener">Run a node</a></div></div>`);
           coinRain(); startCooldown(a); setTimeout(()=>refreshBalance(a), 1500); setTimeout(()=>refreshBalance(a), 4000);
         } else {
           const msg=d.error||'Request failed. Try again later.';
-          if(/rate limit/i.test(msg)){ result('wait',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="body">${msg}</div>`); startCooldown(a); }
+          if(/rate limit/i.test(msg)){ result('wait',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="body">One claim per address and per IP each hour — the cooldown below shows when you can claim again.</div>`); startCooldown(a, Number(d.retry_after)||0); }
           else result('err',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div class="body">${msg}</div>`);
         }
-      }catch(err){ result('err',`<svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg><div class="body">Network error: ${err.message}</div>`); }
+      }catch(err){ result('err',`<svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg><div class="body">Could not reach the faucet (${err.message}). Check your connection, or see status.mersennet.com if it persists.</div>`); }
       finally{ submit.classList.remove('busy'); st.textContent=prev; renderCooldown(); }
     });
 
@@ -450,8 +452,8 @@
     function renderTokens(){
       $('toks').innerHTML = TOKENS.map(t=>`
         <div class="tok" data-k="${t.key}">
-          <div class="glyph" style="background:${t.color}22;color:${t.color}">${t.name.replace('Mock','')[0]}${t.name.replace('Mock','')[1]||''}</div>
-          <div class="meta"><div class="nm">${t.name} <span style="color:var(--text-3);font-weight:400;font-size:12px">· 10,000 per claim</span></div><div class="ad" title="${t.addr}">${short(t.addr,6,4)} <span class="copy" data-copy="${t.addr}">⧉</span> · ${t.dec} dec${window.ethereum?` · <span class="copy" data-watch="${t.key}" title="Add ${t.name} to your wallet">+ wallet</span>`:''}</div></div>
+          <div class="glyph" style="background:${t.color}22;color:${t.color}" aria-hidden="true">${t.name.replace('Mock','').slice(0,4)}</div>
+          <div class="meta"><div class="nm">${t.name} <span style="color:var(--text-3);font-weight:400;font-size:12px">· 10,000 per claim</span></div><div class="ad" title="${t.addr}">${short(t.addr,6,4)} <span class="copy" role="button" tabindex="0" aria-label="Copy" data-copy="${t.addr}">⧉</span> · ${t.dec} dec${window.ethereum?` · <span class="copy" data-watch="${t.key}" title="Add ${t.name} to your wallet">+ wallet</span>`:''}</div></div>
           <div class="amt"></div>
           <button class="claim" data-k="${t.key}" aria-label="Claim 10,000 ${t.name}">Claim</button>
         </div>`).join('');
