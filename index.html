@@ -143,6 +143,10 @@
     .result .body{flex:1;min-width:0}
     .result a{color:inherit;text-decoration:underline;text-underline-offset:2px;font-family:var(--mono)}
     .result .txline{margin-top:6px;font-family:var(--mono);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .result .next{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+    .result .next a{display:inline-block;padding:6px 10px;border:1px solid rgba(43,217,106,.45);border-radius:6px;text-decoration:none;font-size:12px;font-weight:600}
+    .result .next a.primary{background:var(--up);color:#02120a;border-color:var(--up)}
+    .result .next a:hover{filter:brightness(1.1)}
     .copy{cursor:pointer;opacity:.7}.copy:hover{opacity:1}
 
     /* stat chips */
@@ -408,7 +412,7 @@
         const d=await r.json();
         if(d.success){
           const url=EXPLORER+'/tx/'+d.tx_hash;
-          result('ok',`<svg class="i" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg><div class="body"><b>1,000 MRSN on the way.</b><div class="txline">tx <a href="${url}" target="_blank">${short(d.tx_hash,10,8)}</a><span class="copy" data-copy="${d.tx_hash}">⧉</span></div></div>`);
+          result('ok',`<svg class="i" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg><div class="body"><b>1,000 MRSN on the way.</b><div class="txline">tx <a href="${url}" target="_blank">${short(d.tx_hash,10,8)}</a><span class="copy" data-copy="${d.tx_hash}">⧉</span></div><div class="next"><a class="primary" href="https://trade.mersennet.com/trade" target="_blank" rel="noopener">Place your first trade →</a><a href="https://trade.mersennet.com/vault" target="_blank" rel="noopener">Earn LP points in the maker vault</a><a href="https://docs.mersennet.com/validators/run-a-node/" target="_blank" rel="noopener">Run a node</a></div></div>`);
           coinRain(); startCooldown(a); setTimeout(()=>refreshBalance(a), 1500); setTimeout(()=>refreshBalance(a), 4000);
         } else {
           const msg=d.error||'Request failed. Try again later.';
