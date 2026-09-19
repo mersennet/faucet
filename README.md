@@ -40,3 +40,7 @@ backend.
 - [mersennet](https://github.com/mersennet/mersennet) — Core blockchain
 - [explorer](https://github.com/mersennet/explorer) — Block explorer
 - [trade](https://github.com/mersennet/trade) — Perps trading terminal
+
+## License
+
+MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Mersennet Foundation. Security reports: security@mersennet.com ([SECURITY.md](SECURITY.md)).
