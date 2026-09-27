@@ -221,7 +221,7 @@
       <div class="grad"></div>
       <div class="inner">
         <div class="ctitle">Claim 1,000 MRSN <span style="opacity:.6;font-weight:400">+ 1 for gas</span></div>
-        <div class="cdesc">Native gas + collateral token. One claim per address each hour.</div>
+        <div class="cdesc" id="limitsDesc">Native gas + collateral token. One claim per address each hour, three per connection a day.</div>
         <form id="form" autocomplete="off">
           <label for="addr">Your wallet address</label>
           <div class="field" id="field">
@@ -230,6 +230,8 @@
             <button type="button" class="minibtn" id="connectBtn">Connect</button>
             <button type="button" class="minibtn" id="pasteBtn">Paste</button>
           </div>
+          <!-- Cloudflare Turnstile: rendered only when /config carries a site key. -->
+          <div id="cf-turnstile" style="margin-top:14px;min-height:0"></div>
           <button type="submit" class="btn" id="submit"><span id="submitText">Claim 1,000 MRSN</span></button>
         </form>
         <div class="result" id="result" role="status" aria-live="polite"></div>
@@ -277,6 +279,44 @@
     "use strict";
     const RPC = 'https://rpc.mersennet.com';
     const EXPLORER = 'https://explorer.mersennet.com';
+
+    // ---------- Turnstile (optional, backend-driven) ----------
+    // GET /config says whether the backend requires a Cloudflare Turnstile
+    // challenge (turnstileSiteKey) and what the drip limits are. With a site
+    // key the widget renders above the button and its token rides along in
+    // every claim; without one nothing changes.
+    let TS = { siteKey: null, token: null, widgetId: null, required: false };
+    function tsToken(){ return TS.token; }
+    function tsReset(){ TS.token = null; try { if (window.turnstile && TS.widgetId !== null) window.turnstile.reset(TS.widgetId); } catch {} }
+    function tsRender(){
+      if (!window.turnstile || !TS.siteKey || TS.widgetId !== null) return;
+      TS.widgetId = window.turnstile.render('#cf-turnstile', {
+        sitekey: TS.siteKey,
+        theme: document.documentElement.classList.contains('light') ? 'light' : 'dark',
+        callback: (t) => { TS.token = t; },
+        'expired-callback': () => { TS.token = null; },
+        'error-callback': () => { TS.token = null; },
+      });
+    }
+    window.onTurnstileReady = tsRender;
+    (async () => {
+      try {
+        const r = await fetch('/config', { cache: 'no-store' });
+        if (!r.ok) return;
+        const c = await r.json();
+        if (c && c.ipDailyCap && c.addressWindowHours) {
+          const d = document.getElementById('limitsDesc');
+          if (d) d.textContent = `Native gas + collateral token. One claim per address every ${c.addressWindowHours === 1 ? 'hour' : c.addressWindowHours + ' hours'}, ${c.ipDailyCap} per connection a day.`;
+        }
+        if (c && c.turnstileSiteKey) {
+          TS.siteKey = c.turnstileSiteKey; TS.required = true;
+          const sc = document.createElement('script');
+          sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileReady&render=explicit';
+          sc.async = true; sc.defer = true;
+          document.head.appendChild(sc);
+        }
+      } catch {}
+    })();
     const CHAIN_HEX = '0x1ffff';
     const TOKENS = [
       { key: 'usdc', name: 'MockUSDC', addr: '0xA44B23d1D0C0133dA71DeCe399d5d5aDE6DD22d1', dec: 6, color: '#5b8cff' },
@@ -408,7 +448,9 @@
       const submit=$('submit'), st=$('submitText');
       submit.disabled=true; submit.classList.add('busy'); const prev=st.textContent; st.innerHTML='<span class="spin"></span> Sending…';
       try{
-        const r=await fetch('/faucet',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a}) });
+        if (TS.required && !tsToken()) { result('err','<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div class="body">Complete the verification above first — it takes a second and keeps the faucet full for everyone.</div>'); return; }
+        const r=await fetch('/faucet',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a, turnstileToken: tsToken()}) });
+        tsReset();
         let d;
         try{ d=await r.json(); }
         catch{ d={ error: r.status===502||r.status===503||r.status===504 ? 'The faucet backend is not reachable right now (the chain itself is fine). Try again in a minute; live status at status.mersennet.com.' : `The faucet answered with an unexpected response (HTTP ${r.status}). Try again in a minute.` }; }
@@ -418,7 +460,8 @@
           coinRain(); startCooldown(a); setTimeout(()=>refreshBalance(a), 1500); setTimeout(()=>refreshBalance(a), 4000);
         } else {
           const msg=d.error||'Request failed. Try again later.';
-          if(/rate limit/i.test(msg)){ result('wait',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="body">One claim per address and per IP each hour — the cooldown below shows when you can claim again.</div>`); startCooldown(a, Number(d.retry_after)||0); }
+          if(/per 24 hours/i.test(msg)){ result('wait',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="body">${msg.replace(/^rate limited: /i,'')} — try again tomorrow.</div>`); }
+          else if(/rate limit/i.test(msg)){ result('wait',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="body">One claim per address and per IP each hour — the cooldown below shows when you can claim again.</div>`); startCooldown(a, Number(d.retry_after)||0); }
           else result('err',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div class="body">${msg}</div>`);
         }
       }catch(err){ result('err',`<svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg><div class="body">Could not reach the faucet (${err.message}). Check your connection, or see status.mersennet.com if it persists.</div>`); }
@@ -464,7 +507,9 @@
           const t=TOKENS.find(x=>x.key===b.dataset.k);
           b.disabled=true; b.dataset.busy='1'; const pv=b.textContent; b.textContent='…';
           try{
-            const r=await fetch('/claim-token',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a, token:t.key}) });
+            if (TS.required && !tsToken()) { toast('Complete the verification first'); b.dataset.busy=''; b.textContent=pv; b.disabled=false; return; }
+            const r=await fetch('/claim-token',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a, token:t.key, turnstileToken: tsToken()}) });
+            tsReset();
             const d=await r.json();
             if(d.success){ b.textContent='✓ Sent'; b.style.borderColor='var(--up)'; b.style.color='var(--up)';
               toast(`10,000 ${t.name} sent`); watchAsset(t); startTokenCooldown(a,t.key);
