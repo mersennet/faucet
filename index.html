@@ -366,7 +366,10 @@
       catch{ $('balChip').textContent='—'; }
       refreshTokenBalances(addr);
     }
-    // live ERC-20 balances shown next to each token row
+    // live ERC-20 balances shown next to each token row. `tokenHeld` keeps the
+    // raw on-chain balance per token: a wallet that already holds a token has
+    // been through the "add to wallet" prompt before, so it is not asked again.
+    const tokenHeld={};
     async function refreshTokenBalances(addr){
       if(!ADDR_RE.test(addr)) return;
       const data='0x70a08231'+addr.toLowerCase().replace('0x','').padStart(64,'0'); // balanceOf(address)
@@ -375,6 +378,7 @@
         if(!el) return;
         try{
           const raw=await rpc('eth_call',[{to:t.addr,data},'latest']);
+          tokenHeld[t.key]=(raw&&raw!=='0x')?BigInt(raw):0n;
           const bal=(raw&&raw!=='0x')?fmtUnits(raw,t.dec,2):'0';
           el.innerHTML=`<span style="color:var(--text-3)">you have</span> ${bal}`;
         }catch{}
@@ -512,7 +516,11 @@
             tsReset();
             const d=await r.json();
             if(d.success){ b.textContent='✓ Sent'; b.style.borderColor='var(--up)'; b.style.color='var(--up)';
-              toast(`10,000 ${t.name} sent`); watchAsset(t); startTokenCooldown(a,t.key);
+              toast(`10,000 ${t.name} sent`);
+              // First time this wallet receives the token → offer to add it to the
+              // wallet once. Already holding some → they have it (or declined), skip.
+              if(!(tokenHeld[t.key] > 0n)) watchAsset(t);
+              startTokenCooldown(a,t.key);
               setTimeout(()=>{ b.dataset.busy=''; renderTokenCooldowns(); refreshTokenBalances(a); }, 2500); }
             else {
               b.dataset.busy=''; b.textContent=pv; b.disabled=false;
