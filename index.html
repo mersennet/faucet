@@ -286,7 +286,20 @@
     // key the widget renders above the button and its token rides along in
     // every claim; without one nothing changes.
     let TS = { siteKey: null, token: null, widgetId: null, required: false };
-    function tsToken(){ return TS.token; }
+    // The widget is the source of truth: tokens expire after ~5 minutes and the
+    // widget refreshes itself, still showing "Success!" while it does. Ask it
+    // for the current token instead of trusting our copy.
+    function tsToken(){
+      try { if (window.turnstile && TS.widgetId !== null) { const r = window.turnstile.getResponse(TS.widgetId); if (r) return r; } } catch {}
+      return TS.token;
+    }
+    // Wait (up to `ms`) for a token — covers the refresh window after an expiry
+    // or a reset, so a click a second too early just waits instead of failing.
+    async function waitForToken(ms=6000){
+      const t0 = Date.now();
+      while (Date.now() - t0 < ms) { const t = tsToken(); if (t) return t; await new Promise(r => setTimeout(r, 200)); }
+      return null;
+    }
     function tsReset(){ TS.token = null; try { if (window.turnstile && TS.widgetId !== null) window.turnstile.reset(TS.widgetId); } catch {} }
     function tsRender(){
       if (!window.turnstile || !TS.siteKey || TS.widgetId !== null) return;
@@ -452,9 +465,18 @@
       const submit=$('submit'), st=$('submitText');
       submit.disabled=true; submit.classList.add('busy'); const prev=st.textContent; st.innerHTML='<span class="spin"></span> Sending…';
       try{
-        if (TS.required && !tsToken()) { result('err','<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div class="body">Complete the verification above first — it takes a second and keeps the faucet full for everyone.</div>'); return; }
-        const r=await fetch('/faucet',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a, turnstileToken: tsToken()}) });
-        tsReset();
+        let tok = null;
+        if (TS.required) {
+          st.innerHTML='<span class="spin"></span> Verifying…';
+          tok = await waitForToken();
+          if (!tok) { result('err','<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div class="body">The verification above has not completed — if it shows an error, reload the page and try again.</div>'); tsReset(); return; }
+          st.innerHTML='<span class="spin"></span> Sending…';
+        }
+        const r=await fetch('/faucet',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a, turnstileToken: tok}) });
+        // A token is single-use once the server verified it (200 or a 403 from
+        // the challenge); a cooldown reply (429) is answered before verification,
+        // so the token is still good — keep it.
+        if (r.status !== 429) tsReset();
         let d;
         try{ d=await r.json(); }
         catch{ d={ error: r.status===502||r.status===503||r.status===504 ? 'The faucet backend is not reachable right now (the chain itself is fine). Try again in a minute; live status at status.mersennet.com.' : `The faucet answered with an unexpected response (HTTP ${r.status}). Try again in a minute.` }; }
@@ -511,9 +533,13 @@
           const t=TOKENS.find(x=>x.key===b.dataset.k);
           b.disabled=true; b.dataset.busy='1'; const pv=b.textContent; b.textContent='…';
           try{
-            if (TS.required && !tsToken()) { toast('Complete the verification first'); b.dataset.busy=''; b.textContent=pv; b.disabled=false; return; }
-            const r=await fetch('/claim-token',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a, token:t.key, turnstileToken: tsToken()}) });
-            tsReset();
+            let tok = null;
+            if (TS.required) {
+              tok = await waitForToken();
+              if (!tok) { toast('The verification has not completed — try again in a moment'); b.dataset.busy=''; b.textContent=pv; b.disabled=false; tsReset(); return; }
+            }
+            const r=await fetch('/claim-token',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:a, token:t.key, turnstileToken: tok}) });
+            if (r.status !== 429) tsReset();
             const d=await r.json();
             if(d.success){ b.textContent='✓ Sent'; b.style.borderColor='var(--up)'; b.style.color='var(--up)';
               toast(`10,000 ${t.name} sent`);
