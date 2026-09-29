@@ -187,6 +187,13 @@
     footer{text-align:center;font-size:11px;color:var(--text-3);padding:22px 0 8px}
     .banner{display:flex;gap:9px;align-items:center;padding:11px 14px;border-radius:var(--radius);font-size:13px;margin-top:14px;
       background:var(--teal-bg);border:1px solid rgba(64,224,180,.28);color:var(--teal)}
+    /* Incident notice from deploy/incident.sh (/status/notice.json) */
+    .notice{display:block;padding:11px 14px;border-radius:var(--radius);font-size:13px;line-height:1.5;margin:0 0 14px;border:1px solid;color:var(--text)}
+    .notice[hidden]{display:none}
+    .notice b{margin-right:6px}
+    .notice.danger{background:var(--down-bg);border-color:rgba(255,77,61,.35)} .notice.danger b{color:var(--down)}
+    .notice.warning{background:var(--warn-bg);border-color:rgba(255,176,46,.3)} .notice.warning b{color:var(--warn)}
+    .notice.info{background:rgba(91,140,255,.1);border-color:rgba(91,140,255,.3)} .notice.info b{color:var(--info)}
     svg.i{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
     /* coin-rain canvas */
     #fx{position:fixed;inset:0;z-index:50;pointer-events:none}
@@ -216,6 +223,8 @@
       <h1>Fuel the <span class="g">private, verifiable</span> testnet</h1>
       <p>Claim free testnet MRSN — the native gas and collateral token — and mock stablecoins to start trading and building on Mersennet.</p>
     </div>
+
+    <div class="notice" id="notice" role="status" hidden></div>
 
     <div class="card glow claim-card">
       <div class="grad"></div>
@@ -279,6 +288,25 @@
     "use strict";
     const RPC = 'https://rpc.mersennet.com';
     const EXPLORER = 'https://explorer.mersennet.com';
+
+    // ---------- Incident notice (written by deploy/incident.sh) ----------
+    async function loadNotice(){
+      const el = document.getElementById('notice');
+      // ?notice=preview shows what `incident.sh --preview` staged, to nobody else.
+      const file = new URLSearchParams(location.search).get('notice') === 'preview' ? 'notice-preview.json' : 'notice.json';
+      try {
+        const r = await fetch('/status/' + file, { cache: 'no-store' });
+        const n = r.ok ? await r.json() : null;
+        if (!n || !n.active || !n.title || !n.text || !['danger','warning','info'].includes(n.severity)) { el.hidden = true; return; }
+        const b = document.createElement('b'); b.textContent = n.title;
+        const a = document.createElement('a');
+        a.href = n.link || 'https://status.mersennet.com'; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Live status →';
+        el.className = 'notice ' + n.severity;
+        el.replaceChildren(b, document.createTextNode(n.text + ' '), a);
+        el.hidden = false;
+      } catch { /* keep whatever is shown */ }
+    }
+    loadNotice(); setInterval(loadNotice, 60000);
 
     // ---------- Turnstile (optional, backend-driven) ----------
     // GET /config says whether the backend requires a Cloudflare Turnstile
