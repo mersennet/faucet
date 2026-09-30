@@ -239,8 +239,10 @@
             <button type="button" class="minibtn" id="connectBtn">Connect</button>
             <button type="button" class="minibtn" id="pasteBtn">Paste</button>
           </div>
-          <!-- Cloudflare Turnstile: rendered only when /config carries a site key. -->
-          <div id="cf-turnstile" style="margin-top:14px;min-height:0"></div>
+          <!-- Cloudflare Turnstile: rendered only when /config carries a site key. The widget's
+               65 px are reserved up front (production always has a key), so it does not push
+               the button down when it appears; without a key the space is released. -->
+          <div id="cf-turnstile" style="margin-top:14px;min-height:65px"></div>
           <button type="submit" class="btn" id="submit"><span id="submitText">Claim 1,000 MRSN</span></button>
         </form>
         <div class="result" id="result" role="status" aria-live="polite"></div>
@@ -355,6 +357,8 @@
           sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileReady&render=explicit';
           sc.async = true; sc.defer = true;
           document.head.appendChild(sc);
+        } else {
+          document.getElementById('cf-turnstile').style.minHeight = '0';
         }
       } catch {}
     })();
