@@ -91,24 +91,38 @@
     .iconbtn svg{width:16px;height:16px}
 
     /* hero */
-    .hero{text-align:center;padding:40px 0 8px}
-    .hero .logo{width:54px;height:54px;margin:0 auto 16px;filter:drop-shadow(0 0 24px rgba(125,255,155,.35))}
+    .hero{text-align:center;padding:24px 0 2px}
+    .hero .title{display:flex;align-items:center;justify-content:center;gap:14px;text-align:left}
+    .hero .logo{width:40px;height:40px;flex:none;filter:drop-shadow(0 0 18px rgba(125,255,155,.35))}
     .hero h1{font-size:26px;font-weight:800;letter-spacing:-.01em;line-height:1.2}
     .hero h1 .g{color:var(--accent);text-shadow:0 0 12px rgba(43,217,106,.35)}
     html.light .hero h1 .g{text-shadow:none}
-    .hero p{color:var(--text-2);font-size:15px;margin-top:10px}
+    .hero p{color:var(--text-2);font-size:14px;margin-top:8px}
 
     /* card */
     .card{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius-lg);position:relative;overflow:hidden}
     .card.glow{box-shadow:var(--glow)}
     .card .grad{position:absolute;inset:0;background:var(--grad-hero);pointer-events:none}
     .card .inner{position:relative;padding:22px}
-    .claim-card{margin-top:26px}
+    .claim-card{margin-top:14px}
     /* Card title = inverted phosphor block, the signature move of the language. */
     .ctitle{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;
       margin:-22px -22px 0;padding:7px 12px;background:var(--accent-block);color:var(--accent-bright)}
     html.light .ctitle{color:var(--accent)}
-    .cdesc{font-size:12px;color:var(--text-2);margin-top:14px;margin-bottom:18px}
+    .cdesc{font-size:12px;color:var(--text-2);margin-top:12px;margin-bottom:10px}
+    /* Claim counter: the address's claims in its 24 h window, from the backend. */
+    .claims{margin-bottom:16px}
+    .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+    .slot{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 9px;border:1px solid var(--border);
+      font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-2)}
+    .slot .st{font-weight:600;letter-spacing:.02em;text-transform:none;color:var(--text-3)}
+    .slot.used{background:var(--accent-block);border-color:var(--accent-deep);color:var(--accent-bright)}
+    html.light .slot.used{color:var(--accent)}
+    .slot.used .st{color:inherit;opacity:.85}
+    .slot.wait .st{color:var(--warn)}
+    .reset{margin-top:7px;font-size:11px;color:var(--text-3)}
+    @media(max-width:520px){.slot{flex-direction:column;align-items:flex-start;gap:1px}}
+    .reset .cd{font-family:var(--mono);color:var(--accent);font-weight:600}
 
     label{display:block;font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
     .field{display:flex;align-items:center;gap:8px;background:var(--bg-surface);border:1px solid var(--border);
@@ -142,15 +156,19 @@
     .result.wait{background:var(--warn-bg);border-color:rgba(255,176,46,.3);color:var(--warn)}
     .result .body{flex:1;min-width:0}
     .result a{color:inherit;text-decoration:underline;text-underline-offset:2px;font-family:var(--mono)}
-    .result .txline{margin-top:6px;font-family:var(--mono);font-size:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-    .result .next{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
-    .result .next a{display:inline-block;padding:6px 10px;border:1px solid rgba(43,217,106,.45);border-radius:var(--radius,0);text-decoration:none;font-size:12px;font-weight:600}
-    .result .next a.primary{background:var(--up);color:#02120a;border-color:var(--up)}
+    .result .okline{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .result .okline .tx{font-family:var(--mono);font-size:12px}
+    .result .ways{margin-top:10px;font-size:12px;color:var(--text-2)}
+    .result .next{margin-top:8px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .result .next a{display:flex;align-items:center;justify-content:center;text-align:center;padding:7px 8px;line-height:1.3;
+      border:1px solid rgba(43,217,106,.45);border-radius:var(--radius,0);text-decoration:none;font-size:12px;font-weight:600}
+    .result .next a.primary{grid-column:1/-1;background:var(--up);color:#02120a;border-color:var(--up)}
+    @media(max-width:520px){.result .next{grid-template-columns:1fr}}
     .result .next a:hover{filter:brightness(1.1)}
     .copy{cursor:pointer;opacity:.7}.copy:hover{opacity:1}
 
     /* stat chips */
-    .chips{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+    .chips{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
     .chip{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius);padding:12px 13px;text-align:left}
     .chip .l{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
     .chip .v{font-size:15px;font-weight:700;font-family:var(--mono);margin-top:5px}
@@ -219,18 +237,31 @@
 
   <div class="wrap">
     <div class="hero">
-      <svg class="logo" viewBox="0 0 96 96"><g fill="#2bd96a"><rect x="8" y="14" width="12" height="68" rx="6"/><rect x="25" y="14" width="12" height="30" rx="6"/><rect x="42" y="14" width="12" height="46" rx="6"/><rect x="59" y="14" width="12" height="30" rx="6"/><rect x="76" y="14" width="12" height="68" rx="6"/></g></svg>
-      <h1>Fuel the <span class="g">private, verifiable</span> testnet</h1>
+      <div class="title">
+        <svg class="logo" viewBox="0 0 96 96" aria-hidden="true"><g fill="#2bd96a"><rect x="8" y="14" width="12" height="68" rx="6"/><rect x="25" y="14" width="12" height="30" rx="6"/><rect x="42" y="14" width="12" height="46" rx="6"/><rect x="59" y="14" width="12" height="30" rx="6"/><rect x="76" y="14" width="12" height="68" rx="6"/></g></svg>
+        <h1>Fuel the <span class="g">private, verifiable</span> testnet</h1>
+      </div>
       <p>Claim free testnet MRSN — the native gas and collateral token — and mock stablecoins to start trading and building on Mersennet.</p>
     </div>
 
     <div class="notice" id="notice" role="status" hidden></div>
 
+    <div class="chips">
+      <div class="chip"><div class="l">Amount</div><div class="v a">1,001 MRSN</div></div>
+      <div class="chip"><div class="l">Cooldown</div><div class="v" id="cdChip">1 hour</div></div>
+      <div class="chip"><div class="l">Your balance</div><div class="v" id="balChip">—</div></div>
+      <div class="chip"><div class="l">Currency</div><div class="v">MRSN · 18</div></div>
+    </div>
+
     <div class="card glow claim-card">
       <div class="grad"></div>
       <div class="inner">
         <div class="ctitle">Claim 1,000 MRSN <span style="opacity:.6;font-weight:400">+ 1 for gas</span></div>
-        <div class="cdesc" id="limitsDesc">Native gas + collateral token. One claim per address each hour, three per connection a day.</div>
+        <div class="cdesc" id="limitsDesc">Native gas + collateral token. One claim per hour, up to 3 per address every 24 hours.</div>
+        <div class="claims" id="claims" aria-live="polite">
+          <div class="slots" id="claimSlots"><span class="slot">Claim 1<span class="st">open</span></span><span class="slot">Claim 2<span class="st">open</span></span><span class="slot">Claim 3<span class="st">open</span></span></div>
+          <div class="reset" id="claimsReset">3 claims per address every 24 hours; the 24 hours start with your first claim.</div>
+        </div>
         <form id="form" autocomplete="off">
           <label for="addr">Your wallet address</label>
           <div class="field" id="field">
@@ -249,13 +280,6 @@
       </div>
     </div>
 
-    <div class="chips">
-      <div class="chip"><div class="l">Amount · incl. 1 for gas</div><div class="v a">1,001 MRSN</div></div>
-      <div class="chip"><div class="l">Cooldown</div><div class="v" id="cdChip">1 hour</div></div>
-      <div class="chip"><div class="l">Your balance</div><div class="v" id="balChip">—</div></div>
-      <div class="chip"><div class="l">Currency</div><div class="v">MRSN · 18</div></div>
-    </div>
-
     <div class="sec-h"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5h4.5a2 2 0 0 1 0 4H9"/></svg> Mock stablecoins — 10,000 each</div>
     <div class="toks" id="toks"></div>
 
@@ -271,7 +295,7 @@
     </div>
 
     <div class="banner"><svg class="i" viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-4Z"/><path d="M9 12.5l2 2 4-4.5"/></svg>
-      Testnet only — MRSN here has no value. The CLOB accepts MRSN and registered tokens (e.g. USDC) as margin collateral, fully escrowed on-chain.</div>
+      Testnet only — MRSN here has no value. Collateral on the order book is escrowed on chain.</div>
 
     <div class="links">
       <a href="https://explorer.mersennet.com" target="_blank">Explorer</a>
@@ -347,9 +371,11 @@
         const r = await fetch('/config', { cache: 'no-store' });
         if (!r.ok) return;
         const c = await r.json();
-        if (c && c.ipDailyCap && c.addressWindowHours) {
+        if (c && c.addressWindowHours) {
           const d = document.getElementById('limitsDesc');
-          if (d) d.textContent = `Native gas + collateral token. One claim per address every ${c.addressWindowHours === 1 ? 'hour' : c.addressWindowHours + ' hours'}, ${c.ipDailyCap} per connection a day.`;
+          const per = c.addressWindowHours === 1 ? 'hour' : c.addressWindowHours + ' hours';
+          if (d) d.textContent = `Native gas + collateral token. One claim per ${per}, up to ${c.addressDailyCap || 3} per address every 24 hours.`;
+          if (c.addressDailyCap) { CLAIMS.max = c.addressDailyCap; renderClaims(); }
         }
         if (c && c.turnstileSiteKey) {
           TS.siteKey = c.turnstileSiteKey; TS.required = true;
@@ -437,8 +463,8 @@
     function onAddr(){
       const v=addr.value.trim(); const ok=ADDR_RE.test(v);
       field.classList.toggle('valid', ok);
-      if(ok){ ava.src=identicon(v); ava.style.display='block'; if(v.toLowerCase()!==curAddr){ curAddr=v.toLowerCase(); refreshBalance(v); renderCooldown(); renderTokenCooldowns(); } }
-      else { ava.style.display='none'; curAddr=''; $('balChip').textContent='—'; renderTokenCooldowns(); }
+      if(ok){ ava.src=identicon(v); ava.style.display='block'; if(v.toLowerCase()!==curAddr){ curAddr=v.toLowerCase(); refreshBalance(v); refreshClaims(v); renderCooldown(); renderTokenCooldowns(); } }
+      else { ava.style.display='none'; curAddr=''; $('balChip').textContent='—'; renderClaims(); renderCooldown(); renderTokenCooldowns(); }
     }
     addr.addEventListener('input', onAddr);
 
@@ -458,7 +484,44 @@
     }
     $('addNet').onclick = () => addNetwork(false);
 
-    // ---------- cooldown (client-side hint; backend is the source of truth) ----------
+    // ---------- claim counter (the backend's count for the address) ----------
+    const CLAIMS={ addr:'', used:0, max:3, resetsAt:0, nextAt:0, known:false };
+    async function refreshClaims(a){
+      if(!ADDR_RE.test(a||'')){ CLAIMS.known=false; renderClaims(); return; }
+      try{
+        const r=await fetch('/api/claims/'+a, { cache:'no-store' });
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const d=await r.json();
+        if(addr.value.trim().toLowerCase()!==a.toLowerCase()) return;
+        const now=Date.now();
+        Object.assign(CLAIMS, { addr:a.toLowerCase(), used:Number(d.used)||0, max:Number(d.max)||CLAIMS.max,
+          resetsAt:d.resetsInSec?now+d.resetsInSec*1000:0, nextAt:d.nextInSec?now+d.nextInSec*1000:0, known:true });
+      }catch{ CLAIMS.known=false; }
+      renderClaims(); renderCooldown();
+    }
+    const hms=(ms)=>{ const t=Math.max(0,Math.ceil(ms/1000)), h=Math.floor(t/3600), m=Math.floor((t%3600)/60), x=t%60;
+      return (h?h+':'+String(m).padStart(2,'0'):String(m))+':'+String(x).padStart(2,'0'); };
+    function renderClaims(){
+      const a=addr.value.trim().toLowerCase(), now=Date.now();
+      const known=CLAIMS.known && CLAIMS.addr===a;
+      const used=known && CLAIMS.resetsAt>now ? CLAIMS.used : 0;
+      let html='';
+      for(let i=1;i<=CLAIMS.max;i++){
+        let cls='slot', st='open';
+        if(i<=used){ cls+=' used'; st='✓ used'; }
+        else if(known && i===used+1 && CLAIMS.nextAt>now){ cls+=' wait'; st='in '+hms(CLAIMS.nextAt-now); }
+        html+=`<span class="${cls}">Claim ${i}<span class="st">${st}</span></span>`;
+      }
+      $('claimSlots').innerHTML=html;
+      const line=$('claimsReset');
+      if(!known || used===0) line.textContent=`${CLAIMS.max} claims per address every 24 hours; the 24 hours start with your first claim.`;
+      else if(used>=CLAIMS.max) line.innerHTML=`All ${CLAIMS.max} used. They come back in <span class="cd">${hms(CLAIMS.resetsAt-now)}</span>.`;
+      else line.innerHTML=`${used} of ${CLAIMS.max} used. All ${CLAIMS.max} come back in <span class="cd">${hms(CLAIMS.resetsAt-now)}</span>.`;
+    }
+    setInterval(renderClaims, 1000);
+    setInterval(()=>{ const a=addr.value.trim(); if(ADDR_RE.test(a) && document.visibilityState==='visible') refreshClaims(a); }, 60000);
+
+    // ---------- cooldown (the backend's answer when it gave one; else this browser's hint) ----------
     function cdKey(a){ return 'mersennet-faucet-cd:'+a.toLowerCase(); }
     let cdTimer=null;
     function startCooldown(a, retryAfterSec){ localStorage.setItem(cdKey(a), String(Date.now()+((retryAfterSec>0?retryAfterSec:3600)*1000))); renderCooldown(); }
@@ -466,14 +529,18 @@
       clearInterval(cdTimer);
       const a=addr.value.trim(); const submit=$('submit'), st=$('submitText');
       if(!ADDR_RE.test(a)){ submit.disabled=false; st.textContent='Claim 1,000 MRSN'; return; }
-      const until=parseInt(localStorage.getItem(cdKey(a))||'0',10);
+      const known=CLAIMS.known && CLAIMS.addr===a.toLowerCase();
+      const until=known ? CLAIMS.nextAt : parseInt(localStorage.getItem(cdKey(a))||'0',10);
+      const full=known && CLAIMS.used>=CLAIMS.max && CLAIMS.resetsAt>Date.now();
       const tick=()=>{
         const left=until-Date.now();
         const chip=$('cdChip');
         if(left<=0){ submit.disabled=false; st.textContent='Claim 1,000 MRSN'; if(chip) chip.textContent='1 hour'; clearInterval(cdTimer); return; }
-        submit.disabled=true; const m=Math.floor(left/60000), s=Math.floor((left%60000)/1000);
-        st.textContent=`Next claim in ${m}m ${String(s).padStart(2,'0')}s`;
-        if(chip) chip.textContent=`${m}m ${String(s).padStart(2,'0')}s left`;
+        submit.disabled=true;
+        const h=Math.floor(left/3600000), m=Math.floor((left%3600000)/60000), s=Math.floor((left%60000)/1000);
+        const t=h>0 ? `${h}h ${String(m).padStart(2,'0')}m` : `${m}m ${String(s).padStart(2,'0')}s`;
+        st.textContent=full ? `All ${CLAIMS.max} claims used · back in ${t}` : `Next claim in ${t}`;
+        if(chip) chip.textContent=t;
       };
       tick(); cdTimer=setInterval(tick,1000);
     }
@@ -514,12 +581,12 @@
         catch{ d={ error: r.status===502||r.status===503||r.status===504 ? 'The faucet backend is not reachable right now (the chain itself is fine). Try again in a minute; live status at status.mersennet.com.' : `The faucet answered with an unexpected response (HTTP ${r.status}). Try again in a minute.` }; }
         if(d.success){
           const url=EXPLORER+'/tx/'+d.tx_hash;
-          result('ok',`<svg class="i" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg><div class="body"><b>1,001 MRSN on the way.</b><div class="txline">tx <a href="${url}" target="_blank">${short(d.tx_hash,10,8)}</a><span class="copy" role="button" tabindex="0" aria-label="Copy" data-copy="${d.tx_hash}">⧉</span></div><div class="next"><a class="primary" href="https://trade.mersennet.com/trade?deposit=1" target="_blank" rel="noopener">Deposit it and place your first trade →</a><a href="https://trade.mersennet.com/vault" target="_blank" rel="noopener">Earn LP points in the maker vault</a><a href="https://docs.mersennet.com/validators/run-a-node/" target="_blank" rel="noopener">Run a node</a></div></div>`);
-          coinRain(); startCooldown(a); setTimeout(()=>refreshBalance(a), 1500); setTimeout(()=>refreshBalance(a), 4000);
+          result('ok',`<svg class="i" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg><div class="body"><div class="okline"><b>1,001 MRSN claimed</b><span>-</span><span class="tx">tx <a href="${url}" target="_blank">${short(d.tx_hash,10,8)}</a></span><span class="copy" role="button" tabindex="0" aria-label="Copy" data-copy="${d.tx_hash}">⧉</span></div><div class="ways">Ways to get involved in the Mersennet testnet ecosystem to earn points:</div><div class="next"><a class="primary" href="https://trade.mersennet.com/trade?deposit=1" target="_blank" rel="noopener">Deposit and trade MRSN →</a><a href="https://trade.mersennet.com/vault" target="_blank" rel="noopener">Deposit MRSN into Maker Vault</a><a href="https://docs.mersennet.com/validators/run-a-node/" target="_blank" rel="noopener">Use MRSN to run a validator</a><a href="https://trade.mersennet.com/staking" target="_blank" rel="noopener">Delegate MRSN to a validator</a></div></div>`);
+          coinRain(); startCooldown(a); refreshClaims(a); setTimeout(()=>refreshBalance(a), 1500); setTimeout(()=>refreshBalance(a), 4000);
         } else {
           const msg=d.error||'Request failed. Try again later.';
-          if(/per 24 hours/i.test(msg)){ result('wait',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="body">${msg.replace(/^rate limited: /i,'')} — try again tomorrow.</div>`); }
-          else if(/rate limit/i.test(msg)){ result('wait',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="body">One claim per address and per IP each hour — the cooldown below shows when you can claim again.</div>`); startCooldown(a, Number(d.retry_after)||0); }
+          if(/per 24 hours/i.test(msg)){ result('wait',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="body">${msg.replace(/^rate limited: /i,'')}${/come back/i.test(msg)?'.':' — try again tomorrow.'}</div>`); refreshClaims(a); }
+          else if(/rate limit/i.test(msg)){ result('wait',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="body">One claim per address and per IP each hour — the button shows when you can claim again.</div>`); startCooldown(a, Number(d.retry_after)||0); refreshClaims(a); }
           else result('err',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div class="body">${msg}</div>`);
         }
       }catch(err){ result('err',`<svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg><div class="body">Could not reach the faucet (${err.message}). Check your connection, or see status.mersennet.com if it persists.</div>`); }
