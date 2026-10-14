@@ -82,7 +82,8 @@
     .brand svg{width:26px;height:26px}
     .grow{flex:1}
     .pill{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;border-radius:var(--pill);
-      background:var(--bg-card);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--text-2)}
+      background:var(--bg-card);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--text-2);white-space:nowrap}
+    @media(max-width:380px){.hbar{gap:6px;padding:0 14px}}
     .dot{width:7px;height:7px;border-radius:50%;background:var(--up);box-shadow:0 0 8px var(--up);animation:pulse 1.9s var(--ease) infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
     .iconbtn{width:34px;height:34px;border-radius:0;border:1px solid var(--border);background:var(--bg-card);
@@ -92,9 +93,7 @@
 
     /* hero */
     .hero{text-align:center;padding:24px 0 2px}
-    .hero .title{display:flex;align-items:center;justify-content:center;gap:14px;text-align:left}
-    .hero .logo{width:40px;height:40px;flex:none;filter:drop-shadow(0 0 18px rgba(125,255,155,.35))}
-    .hero h1{font-size:26px;font-weight:800;letter-spacing:-.01em;line-height:1.2}
+    .hero h1{font-size:clamp(16px,calc((100vw - 44px) / 16.8),26px);font-weight:800;letter-spacing:-.01em;line-height:1.2}
     .hero h1 .g{color:var(--accent);text-shadow:0 0 12px rgba(43,217,106,.35)}
     html.light .hero h1 .g{text-shadow:none}
     .hero p{color:var(--text-2);font-size:14px;margin-top:8px}
@@ -158,13 +157,15 @@
     .result a{color:inherit;text-decoration:underline;text-underline-offset:2px;font-family:var(--mono)}
     .result .okline{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
     .result .okline .tx{font-family:var(--mono);font-size:12px}
+    @media(max-width:520px){.result .okline{row-gap:2px}.result .okline .sep{flex-basis:100%;height:0;overflow:hidden}}
     .result .ways{margin-top:10px;font-size:12px;color:var(--text-2)}
     .result .next{margin-top:8px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
     .result .next a{display:flex;align-items:center;justify-content:center;text-align:center;padding:7px 8px;line-height:1.3;
-      border:1px solid rgba(43,217,106,.45);border-radius:var(--radius,0);text-decoration:none;font-size:12px;font-weight:600}
+      background:#fff;color:var(--accent-deep);border:1px solid var(--up);border-radius:var(--radius,0);text-decoration:none;font-size:12px;font-weight:600}
     .result .next a.primary{grid-column:1/-1;background:var(--up);color:#02120a;border-color:var(--up)}
     @media(max-width:520px){.result .next{grid-template-columns:1fr}}
-    .result .next a:hover{filter:brightness(1.1)}
+    .result .next a:hover{background:#eafbf0}
+    .result .next a.primary:hover{background:var(--up);filter:brightness(1.1)}
     .copy{cursor:pointer;opacity:.7}.copy:hover{opacity:1}
 
     /* stat chips */
@@ -237,10 +238,7 @@
 
   <div class="wrap">
     <div class="hero">
-      <div class="title">
-        <svg class="logo" viewBox="0 0 96 96" aria-hidden="true"><g fill="#2bd96a"><rect x="8" y="14" width="12" height="68" rx="6"/><rect x="25" y="14" width="12" height="30" rx="6"/><rect x="42" y="14" width="12" height="46" rx="6"/><rect x="59" y="14" width="12" height="30" rx="6"/><rect x="76" y="14" width="12" height="68" rx="6"/></g></svg>
-        <h1>Fuel the <span class="g">private, verifiable</span> testnet</h1>
-      </div>
+      <h1>Fuel the<br><span class="g">private, verifiable</span> testnet</h1>
       <p>Claim free testnet MRSN — the native gas and collateral token — and mock stablecoins to start trading and building on Mersennet.</p>
     </div>
 
@@ -582,7 +580,7 @@
         catch{ d={ error: r.status===502||r.status===503||r.status===504 ? 'The faucet backend is not reachable right now (the chain itself is fine). Try again in a minute; live status at status.mersennet.com.' : `The faucet answered with an unexpected response (HTTP ${r.status}). Try again in a minute.` }; }
         if(d.success){
           const url=EXPLORER+'/tx/'+d.tx_hash;
-          result('ok',`<svg class="i" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg><div class="body"><div class="okline"><b>1,001 MRSN claimed</b><span>-</span><span class="tx">tx <a href="${url}" target="_blank">${short(d.tx_hash,10,8)}</a></span><span class="copy" role="button" tabindex="0" aria-label="Copy" data-copy="${d.tx_hash}">⧉</span></div><div class="ways">Ways to get involved in the Mersennet testnet ecosystem to earn points:</div><div class="next"><a class="primary" href="https://trade.mersennet.com/trade?deposit=1" target="_blank" rel="noopener">Deposit and trade MRSN →</a><a href="https://trade.mersennet.com/vault" target="_blank" rel="noopener">Deposit MRSN into Maker Vault</a><a href="https://docs.mersennet.com/validators/run-a-node/" target="_blank" rel="noopener">Use MRSN to run a validator</a><a href="https://trade.mersennet.com/staking" target="_blank" rel="noopener">Delegate MRSN to a validator</a></div></div>`);
+          result('ok',`<div class="body"><div class="okline"><svg class="i" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg><b>1,001 MRSN claimed</b><span class="sep">-</span><span class="tx">tx <a href="${url}" target="_blank">${innerWidth<520 ? short(d.tx_hash,6,4) : short(d.tx_hash,10,8)}</a></span><span class="copy" role="button" tabindex="0" aria-label="Copy" data-copy="${d.tx_hash}">⧉</span></div><div class="ways">Ways to get involved in the Mersennet testnet ecosystem to earn points:</div><div class="next"><a class="primary" href="https://trade.mersennet.com/trade?deposit=1" target="_blank" rel="noopener">Deposit and trade MRSN →</a><a href="https://trade.mersennet.com/vault" target="_blank" rel="noopener">Deposit MRSN into Maker Vault</a><a href="https://docs.mersennet.com/validators/run-a-node/" target="_blank" rel="noopener">Use MRSN to run a validator</a><a href="https://trade.mersennet.com/staking" target="_blank" rel="noopener">Delegate MRSN to a validator</a></div></div>`);
           coinRain(); startCooldown(a); refreshClaims(a); setTimeout(()=>refreshBalance(a), 1500); setTimeout(()=>refreshBalance(a), 4000);
         } else {
           const msg=d.error||'Request failed. Try again later.';
