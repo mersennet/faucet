@@ -127,6 +127,10 @@
     .reset .cd{font-family:var(--mono);color:var(--accent);font-weight:600}
 
     label{display:block;font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+    /* The buttons sit beside the label so the whole row is the address's: 42 monospace characters. */
+    .addr-head{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-bottom:8px}
+    .addr-head label{margin-bottom:0}
+    .addr-actions{display:flex;gap:6px;flex:none}
     .field{display:flex;align-items:center;gap:8px;background:var(--bg-surface);border:1px solid var(--border);
       border-radius:var(--radius);padding:5px 5px 5px 12px;transition:border-color .15s,box-shadow .15s}
     .field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
@@ -264,12 +268,16 @@
           <div class="reset" id="claimsReset">3 claims per address every 24 hours; the 24 hours start with your first claim.</div>
         </div>
         <form id="form" autocomplete="off">
-          <label for="addr">Your wallet address</label>
+          <div class="addr-head">
+            <label for="addr">Your wallet address</label>
+            <div class="addr-actions">
+              <button type="button" class="minibtn" id="connectBtn">Connect</button>
+              <button type="button" class="minibtn" id="pasteBtn">Paste</button>
+            </div>
+          </div>
           <div class="field" id="field">
             <img class="ava" id="ava" alt="" style="display:none" />
             <input id="addr" placeholder="0x…" spellcheck="false" inputmode="text" aria-label="Wallet address" />
-            <button type="button" class="minibtn" id="connectBtn">Connect</button>
-            <button type="button" class="minibtn" id="pasteBtn">Paste</button>
           </div>
           <!-- Cloudflare Turnstile: rendered only when /config carries a site key. The widget's
                65 px are reserved up front (production always has a key), so it does not push
@@ -462,7 +470,14 @@
     const addr=$('addr'), field=$('field'), ava=$('ava');
     let curAddr='';
     function setAddr(v){ addr.value=v; onAddr(); }
+    // Smaller type rather than a cut-off address on narrow screens.
+    function fitAddr(){
+      addr.style.fontSize='';
+      for(let px=12.5; px>=9 && addr.scrollWidth>addr.clientWidth; px-=0.5) addr.style.fontSize=px+'px';
+    }
+    window.addEventListener('resize', fitAddr);
     function onAddr(){
+      fitAddr();
       const v=addr.value.trim(); const ok=ADDR_RE.test(v);
       field.classList.toggle('valid', ok);
       if(ok){ ava.src=identicon(v); ava.style.display='block'; if(v.toLowerCase()!==curAddr){ curAddr=v.toLowerCase(); refreshBalance(v); refreshClaims(v); renderCooldown(); renderTokenCooldowns(); } }
