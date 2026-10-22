@@ -122,6 +122,7 @@
     html.light .slot.used{color:var(--accent)}
     .slot.used .st{color:inherit;opacity:.85}
     .slot.wait .st{color:var(--warn)}
+    .slot.later{opacity:.6}
     .reset{margin-top:7px;font-size:11px;color:var(--text-3)}
     @media(max-width:520px){.slot{flex-direction:column;align-items:flex-start;gap:1px}}
     .reset .cd{font-family:var(--mono);color:var(--accent);font-weight:600}
@@ -526,7 +527,9 @@
       for(let i=1;i<=CLAIMS.max;i++){
         let cls='slot', st='open';
         if(i<=used){ cls+=' used'; st='✓ used'; }
-        else if(known && i===used+1 && CLAIMS.nextAt>now){ cls+=' wait'; st='in '+hms(CLAIMS.nextAt-now); }
+        else if(i===used+1){ if(known && CLAIMS.nextAt>now){ cls+=' wait'; st='in '+hms(CLAIMS.nextAt-now); } }
+        // Claims are an hour apart, so only the next one can be open or counting down.
+        else { cls+=' later'; st='after #'+(i-1); }
         html+=`<span class="${cls}">Claim ${i}<span class="st">${st}</span></span>`;
       }
       $('claimSlots').innerHTML=html;
