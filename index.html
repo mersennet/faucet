@@ -609,7 +609,7 @@
           else if(/rate limit/i.test(msg)){ result('wait',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="body">One claim per address and per IP each hour — the button shows when you can claim again.</div>`); startCooldown(a, Number(d.retry_after)||0); refreshClaims(a); }
           else result('err',`<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div class="body">${msg}</div>`);
         }
-      }catch(err){ result('err',`<svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg><div class="body">Could not reach the faucet (${err.message}). Check your connection, or see status.mersennet.com if it persists.</div>`); }
+      }catch(err){ console.warn('faucet request failed:', err); result('err',`<svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg><div class="body">Faucet connection failed: unable to fetch MRSN. Make sure your internet connection is active; if the issue persists, check <a href="https://status.mersennet.com" target="_blank" rel="noopener">status.mersennet.com</a>.</div>`); }
       finally{ submit.classList.remove('busy'); st.textContent=prev; renderCooldown(); }
     });
 
