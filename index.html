@@ -256,7 +256,7 @@
       <div class="chip"><div class="l">Amount</div><div class="v a">1,001 MRSN</div></div>
       <div class="chip"><div class="l">Cooldown</div><div class="v" id="cdChip">1 hour</div></div>
       <div class="chip"><div class="l">Your balance</div><div class="v" id="balChip">—</div></div>
-      <div class="chip"><div class="l">Currency</div><div class="v">MRSN · 18</div></div>
+      <div class="chip"><div class="l">Transfer fee</div><div class="v" id="feeChip" title="MRSN at the 1 gwei floor">0.000021</div></div>
     </div>
 
     <div class="card glow claim-card">
@@ -344,6 +344,19 @@
       } catch { /* keep whatever is shown */ }
     }
     loadNotice(); setInterval(loadNotice, 60000);
+
+    // ---------- Network fee: what a transfer costs, priced on the testnet's MRSN/USD market ----------
+    async function loadFee(){
+      try {
+        const r = await fetch('https://trade.mersennet.com/api/v1/stats/fees');
+        const t = r.ok ? ((await r.json()).actions || []).find((a) => a.key === 'transfer') : null;
+        if (!t || t.usd == null) return;
+        const chip = document.getElementById('feeChip');
+        chip.textContent = '$' + t.usd.toFixed(4);
+        chip.title = `${+t.mrsn.toPrecision(2)} MRSN, priced on the testnet's MRSN/USD market`;
+      } catch { /* keeps the MRSN figure */ }
+    }
+    loadFee(); setInterval(loadFee, 60000);
 
     // ---------- Turnstile (optional, backend-driven) ----------
     // GET /config says whether the backend requires a Cloudflare Turnstile
